@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import cors from "cors";
+import shortid from 'shortid';
 
 const app = express();
 const PORT = 5000;
@@ -85,6 +86,87 @@ app.post(
     res.status(200).json({ message: "Login successful", token });
   })
 );
+
+// Event Schema and Model
+const eventSchema = new mongoose.Schema({
+  title: { type: String, required: true },
+  description: { type: String },
+  mode: { type: String, required: true },
+  link: { type: String },
+  eventDate: { type: Date, required: true }, // Ensure this is Date type and required
+  timeSlots: [
+    {
+      from: { type: String, required: true },
+      to: { type: String, required: true },
+    },
+  ],
+  slug: { type: String, unique: true },
+  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+});
+
+const Event = mongoose.model("Event", eventSchema);
+
+
+// Create Event Route
+app.post(
+  "/api/events",
+  asyncHandler(async (req, res) => {
+    const { title, description, mode, link, eventDate, timeSlots } = req.body;
+
+    // Check if eventDate is valid
+    if (!eventDate || isNaN(new Date(eventDate))) {
+      return res.status(400).json({ message: "Invalid event date" });
+    }
+
+    const token = req.headers.authorization?.split(" ")[1]; // Get token from Authorization header
+
+    if (!token) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    try {
+      const decoded = jwt.verify(token, JWT_SECRET);
+      const userId = decoded.id;
+
+      const slug = shortid.generate();
+
+      const newEvent = new Event({
+        title,
+        description,
+        mode,
+        link,
+        eventDate: new Date(eventDate), // Convert to Date object
+        timeSlots,
+        slug: slug,
+        createdBy: userId,
+      });
+
+      await newEvent.save();
+
+      res.status(201).json({ message: "Event created successfully", event: newEvent });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal Server Error" });
+    }
+  })
+);
+
+app.get('/api/events/:slug', async (req, res) => {
+  const { slug } = req.params;
+
+  try {
+    const event = await Event.findOne({ slug });
+    
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    res.status(200).json({ event });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
+
 // Global error handler
 app.use((err, req, res, next) => {
   console.error("Error:", err);

@@ -167,6 +167,29 @@ app.get('/api/events/:slug', async (req, res) => {
   }
 });
 
+// Get Events Route
+app.get(
+  "/api/events",
+  asyncHandler(async (req, res) => {
+    const token = req.headers.authorization?.split(" ")[1];
+
+    if (!token) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    try {
+      const decoded = jwt.verify(token, JWT_SECRET);
+      const userId = decoded.id;
+
+      const events = await Event.find({ createdBy: userId });
+      res.status(200).json({ events });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal Server Error" });
+    }
+  })
+);
+
 // Global error handler
 app.use((err, req, res, next) => {
   console.error("Error:", err);

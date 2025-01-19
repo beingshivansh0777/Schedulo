@@ -42,22 +42,50 @@ export default function SignIn() {
   };
 
   return (
-    <form onSubmit={handleLogin} className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="login-email">Email</Label>
-        <Input id="login-email" name="email" type="email" required placeholder="Enter your email" />
+    <form
+      onSubmit={handleLogin}
+      className="max-w-md mx-auto p-6 bg-white shadow-md rounded-lg border border-gray-200 space-y-6"
+    >
+      <div className="text-center">
+        <h2 className="text-2xl font-bold text-gray-900">Welcome Back</h2>
+        <p className="text-gray-500">Please sign in to your account</p>
       </div>
-      <div className="space-y-2">
-        <Label htmlFor="login-password">Password</Label>
-        <Input
-          id="login-password"
-          name="password"
-          type="password"
-          required
-          placeholder="Enter your password"
-        />
+
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="login-email" className="text-gray-700 font-medium">
+            Email
+          </Label>
+          <Input
+            id="login-email"
+            name="email"
+            type="email"
+            required
+            placeholder="Enter your email"
+            className="border-gray-300 focus:ring-indigo-500 focus:border-indigo-500"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="login-password" className="text-gray-700 font-medium">
+            Password
+          </Label>
+          <Input
+            id="login-password"
+            name="password"
+            type="password"
+            required
+            placeholder="Enter your password"
+            className="border-gray-300 focus:ring-indigo-500 focus:border-indigo-500"
+          />
+        </div>
       </div>
-      <Button type="submit" className="w-full" disabled={isLoading}>
+
+
+      <Button
+        type="submit"
+        className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-lg focus:ring-4 focus:ring-indigo-500 disabled:opacity-50"
+        disabled={isLoading}
+      >
         {isLoading ? "Logging in..." : "Login"}
       </Button>
     </form>

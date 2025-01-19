@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Calendar, Clock, Globe, MapPin } from "lucide-react";
 
 interface TimeSlot {
   from: string;
@@ -40,7 +41,6 @@ export default function EventPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
-
   const [form, setForm] = useState<RegistrationForm>({
     name: "",
     email: "",
@@ -54,11 +54,7 @@ export default function EventPage() {
           `http://localhost:5000/api/events/${params.slug}`
         );
         const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(data.message || "Failed to fetch event");
-        }
-
+        if (!response.ok) throw new Error(data.message || "Failed to fetch event");
         setEvent(data.event);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to fetch event");
@@ -67,14 +63,11 @@ export default function EventPage() {
       }
     };
 
-    if (params.slug) {
-      fetchEvent();
-    }
+    if (params.slug) fetchEvent();
   }, [params.slug]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!form.selectedTimeSlot) {
       setError("Please select a time slot");
       return;
@@ -85,23 +78,12 @@ export default function EventPage() {
         `http://localhost:5000/api/events/${params.slug}/register`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            name: form.name,
-            email: form.email,
-            selectedTimeSlot: form.selectedTimeSlot,
-          }),
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(form),
         }
       );
-
       const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Registration failed");
-      }
-
+      if (!response.ok) throw new Error(data.message || "Registration failed");
       setRegistrationSuccess(true);
       setForm({ name: "", email: "", selectedTimeSlot: null });
     } catch (err) {
@@ -112,165 +94,201 @@ export default function EventPage() {
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
-        Loading...
+        <div className="animate-pulse space-y-4">
+          <div className="h-8 w-64 bg-gray-200 rounded"></div>
+          <div className="h-4 w-48 bg-gray-200 rounded"></div>
+        </div>
       </div>
     );
   }
 
   if (error || !event) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <Card className="w-full max-w-2xl">
-          <CardContent className="p-6">
-            <p className="text-red-500">Error: {error || "Event not found"}</p>
-          </CardContent>
-        </Card>
+      <div className="flex justify-center items-center min-h-screen p-4">
+        <Alert className="w-full max-w-md bg-red-50 border-red-200">
+          <AlertDescription className="text-red-800">
+            {error || "Event not found"}
+          </AlertDescription>
+        </Alert>
       </div>
     );
   }
 
   return (
-    <div>
-      <div
-        className="absolute inset-0 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50"
-        style={{
-          backgroundImage: `linear-gradient(to bottom right, rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.1)),
-                             linear-gradient(rgba(99, 102, 241, 0.05) 2px, transparent 2px),
-                             linear-gradient(90deg, rgba(99, 102, 241, 0.05) 2px, transparent 2px)`,
-          backgroundSize: "100% 100%, 20px 20px, 20px 20px",
-        }}
-      >
-        <div className="flex justify-center items-center min-h-screen p-4">
-          <Card className="w-full max-w-4xl bg-white shadow-lg rounded-lg">
-            <CardHeader>
-              <div className="flex justify-between items-center">
-                <CardTitle className="text-3xl font-bold">
-                  {event.title}
-                </CardTitle>
+    <div className="flex justify-center items-center">
+
+<div
+          className="absolute inset-0 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50"
+          style={{
+            backgroundImage: `
+            linear-gradient(to bottom right, rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.1)),
+            linear-gradient(rgba(99, 102, 241, 0.05) 2px, transparent 2px),
+            linear-gradient(90deg, rgba(99, 102, 241, 0.05) 2px, transparent 2px)
+          `,
+            backgroundSize: "100% 100%, 20px 20px, 20px 20px",
+          }}
+        />
+
+      <div className="z-10 min-h-screen w-full bg-gradient-to-br">
+      <div className="max-w-7xl mx-auto px-4 py-12">
+        <div className="grid md:grid-cols-5 gap-8">
+        {/* Event Details Section */}
+        <div className="md:col-span-3">
+          <Card className="h-full">
+          <CardHeader className="space-y-4 pb-4">
+            <div className="space-y-2">
+            <CardTitle className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              {event.title}
+            </CardTitle>
+            <p className="text-gray-600 text-lg">{event.description}</p>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-6">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex items-center space-x-3 p-4 bg-gray-50 rounded-lg">
+              <Calendar className="h-5 w-5 text-blue-600" />
+              <div>
+                <p className="text-sm text-gray-500">Date</p>
+                <p className="font-medium">
+                {format(new Date(event.eventDate), "MMMM d, yyyy")}
+                </p>
               </div>
-            </CardHeader>
-            <CardContent className="space-y-6 grid grid-cols-2 gap-6">
-              {/* Left Side: Event Details */}
-              <div className="space-y-4">
-                <div>
-                  <h3 className="font-semibold mb-2">Description</h3>
-                  <p>{event.description}</p>
-                </div>
-
-                <div>
-                  <h3 className="font-semibold mb-2">Event Details</h3>
-                  <div className="space-y-2">
-                    <p>
-                      <strong>Mode:</strong> {event.mode}
-                    </p>
-                    {event.mode === "online" && event.link && (
-                      <p>
-                        <strong>Meeting Link:</strong>{" "}
-                        <a
-                          href={event.link}
-                          className="text-blue-500 hover:underline"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          {event.link}
-                        </a>
-                      </p>
-                    )}
-                    <p>
-                      <strong>Date:</strong>{" "}
-                      {format(new Date(event.eventDate), "MMMM d, yyyy")}
-                    </p>
-                  </div>
-                </div>
               </div>
-
-              {/* Right Side: Registration Form */}
-              <div className="space-y-4">
-                <h3 className="text-xl font-semibold">
-                  Register for this Event
-                </h3>
-
-                {registrationSuccess ? (
-                  <Alert className="bg-green-50 border-green-200">
-                    <AlertDescription className="text-green-800">
-                      Registration successful! You will receive a confirmation
-                      email shortly.
-                    </AlertDescription>
-                  </Alert>
-                ) : (
-                  <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                      <Label htmlFor="name">Name</Label>
-                      <Input
-                        id="name"
-                        value={form.name}
-                        onChange={(e) =>
-                          setForm({ ...form, name: e.target.value })
-                        }
-                        required
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="email">Email</Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        value={form.email}
-                        onChange={(e) =>
-                          setForm({ ...form, email: e.target.value })
-                        }
-                        required
-                      />
-                    </div>
-
-                    <div>
-                      <h3 className="font-semibold mb-2">
-                        Available Time Slots
-                      </h3>
-                      <div className="space-y-4">
-                        {event.timeSlots.map((slot, index) => (
-                          <div
-                            key={index}
-                            className={`m-2 inline-block px-3 py-1 border rounded-md cursor-pointer text-sm ${
-                              form.selectedTimeSlot?.from === slot.from &&
-                              form.selectedTimeSlot?.to === slot.to
-                                ? "bg-blue-200"
-                                : "hover:bg-gray-100"
-                            }`}
-                            onClick={() =>
-                              setForm({ ...form, selectedTimeSlot: slot })
-                            }
-                          >
-                            {slot.from} - {slot.to}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    <Button
-                      type="submit"
-                      className="w-full bg-blue-500 text-white"
-                    >
-                      Register
-                    </Button>
-                  </form>
-                )}
+              <div className="flex items-center space-x-3 p-4 bg-gray-50 rounded-lg">
+              {event.mode === "online" ? (
+                <Globe className="h-5 w-5 text-blue-600" />
+              ) : (
+                <MapPin className="h-5 w-5 text-blue-600" />
+              )}
+              <div>
+                <p className="text-sm text-gray-500">Mode</p>
+                <p className="font-medium capitalize">{event.mode}</p>
               </div>
-            </CardContent>
-            <CardFooter className="text-center text-sm text-gray-500">
-              Created with {" "}
-              <span>
-                <a
-                  href="https://github.com/mukundsolanki"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >Schedulo
-                </a>
-              </span>
-            </CardFooter>
+              </div>
+            </div>
+
+            {event.mode === "online" && event.link && (
+              <div className="p-4 bg-blue-50 rounded-lg">
+              <p className="font-medium mb-2">Meeting Link</p>
+              <a
+                href={event.link}
+                className="text-blue-600 hover:underline break-all"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {event.link}
+              </a>
+              </div>
+            )}
+
+            <div>
+              <h3 className="font-semibold text-lg mb-3 flex items-center">
+              <Clock className="h-5 w-5 mr-2 text-black" />
+              Select Available Time Slots
+              </h3>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+              {event.timeSlots.map((slot, index) => (
+                <button
+                key={index}
+                onClick={() =>
+                  setForm({ ...form, selectedTimeSlot: slot })
+                }
+                className={`p-3 rounded-lg text-sm font-medium transition-all
+                  ${
+                  form.selectedTimeSlot?.from === slot.from &&
+                  form.selectedTimeSlot?.to === slot.to
+                    ? "bg-blue-100 text-black ring-2 ring-green-600"
+                    : "bg-white hover:bg-gray-50 text-gray-700 border border-gray-200"
+                  }`}
+                >
+                {slot.from} - {slot.to}
+                </button>
+              ))}
+              </div>
+            </div>
+            </div>
+          </CardContent>
           </Card>
         </div>
+
+        {/* Registration Form Section */}
+        <div className="md:col-span-2">
+          <Card className="sticky top-8">
+          <CardHeader>
+            <CardTitle className="text-2xl font-semibold">
+            Register for this Event
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {registrationSuccess ? (
+            <Alert className="bg-green-50 border-green-200">
+              <AlertDescription className="text-green-800">
+              Registration successful! You will receive a confirmation email
+              shortly.
+              </AlertDescription>
+            </Alert>
+            ) : (
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="space-y-2">
+              <Label htmlFor="name" className="text-sm font-medium">
+                Full Name
+              </Label>
+              <Input
+                id="name"
+                placeholder="Enter your name"
+                value={form.name}
+                onChange={(e) =>
+                setForm({ ...form, name: e.target.value })
+                }
+                className="w-full"
+                required
+              />
+              </div>
+
+              <div className="space-y-2">
+              <Label htmlFor="email" className="text-sm font-medium">
+                Email Address
+              </Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="you@example.com"
+                value={form.email}
+                onChange={(e) =>
+                setForm({ ...form, email: e.target.value })
+                }
+                className="w-full"
+                required
+              />
+              </div>
+
+              <Button
+              type="submit"
+              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium py-2 px-4 rounded-lg transition-all"
+              >
+              Register Now
+              </Button>
+            </form>
+            )}
+          </CardContent>
+          <CardFooter className="text-center text-sm text-gray-500">
+            <p className="w-full">
+            Created with{" "}
+            <a
+              href="https://github.com/mukundsolanki"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:underline"
+            >
+              Schedulo
+            </a>
+            </p>
+          </CardFooter>
+          </Card>
+        </div>
+        </div>
+      </div>
       </div>
     </div>
   );

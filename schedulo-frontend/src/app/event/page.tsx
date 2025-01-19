@@ -19,6 +19,7 @@ import {
   Link as LinkIcon,
   Plus,
   ArrowLeft,
+  Trash2,
 } from "lucide-react";
 
 export default function CreateEventPage() {
@@ -28,17 +29,38 @@ export default function CreateEventPage() {
   const [mode, setMode] = useState("offline");
   const [link, setLink] = useState("");
   const [eventDate, setEventDate] = useState<Date | undefined>(undefined);
-  const [timeSlots, setTimeSlots] = useState([{ from: "", to: "" }]);
+  const [timeSlots, setTimeSlots] = useState([
+    { hour: "", minute: "", period: "AM", toHour: "", toMinute: "", toPeriod: "AM" }
+  ]);
   const [uniqueLink, setUniqueLink] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const handleAddTimeSlot = () => {
-    setTimeSlots([...timeSlots, { from: "", to: "" }]);
+    setTimeSlots([...timeSlots, { 
+      hour: "", 
+      minute: "", 
+      period: "AM",
+      toHour: "", 
+      toMinute: "", 
+      toPeriod: "AM" 
+    }]);
+  };
+
+  const handleRemoveTimeSlot = (index: number) => {
+    if (timeSlots.length > 1) {
+      setTimeSlots(timeSlots.filter((_, i) => i !== index));
+    }
+  };
+
+  const formatTimeSlots = () => {
+    return timeSlots.map(slot => ({
+      from: `${slot.hour}:${slot.minute} ${slot.period}`,
+      to: `${slot.toHour}:${slot.toMinute} ${slot.toPeriod}`
+    }));
   };
 
   const handleSubmit = async () => {
     const token = localStorage.getItem("authToken");
-
     if (!token) {
       alert("You must be logged in to create an event.");
       return;
@@ -57,12 +79,11 @@ export default function CreateEventPage() {
           mode,
           link,
           eventDate,
-          timeSlots,
+          timeSlots: formatTimeSlots(),
         }),
       });
 
       const data = await response.json();
-
       if (response.ok) {
         setUniqueLink(data.event.slug);
         setIsDialogOpen(true);
@@ -75,60 +96,50 @@ export default function CreateEventPage() {
   };
 
   return (
-    <div className="min-h-screen relative">
-      {/* Background with grid pattern and gradient */}
-      <div
-        className="absolute inset-0 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50"
-        style={{
-          backgroundImage: `
-            linear-gradient(to bottom right, rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.1)),
-            linear-gradient(rgba(99, 102, 241, 0.05) 2px, transparent 2px),
-            linear-gradient(90deg, rgba(99, 102, 241, 0.05) 2px, transparent 2px)
-          `,
-          backgroundSize: "100% 100%, 20px 20px, 20px 20px",
-        }}
-      />
-
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
       {/* Navigation Bar */}
-      <nav className="bg-white/80 backdrop-blur-sm border-b px-6 h-16 flex items-center fixed w-full z-10">
-        <Button
-          variant="ghost"
-          className="mr-4"
-          onClick={() => router.push("/home")}
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back
-        </Button>
+      <nav className="py-6 px-8 bg-white border-b">
+        <div className="max-w-7xl mx-auto flex justify-between items-center">
+          <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              onClick={() => router.push("/home")}
+              className="text-gray-600 hover:text-gray-900"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Dashboard
+            </Button>
+          </div>
+          <h1 className="text-2xl font-bold text-gray-900">Schedulo</h1>
+        </div>
       </nav>
 
       {/* Main Content */}
-      <div className="relative pt-24 px-6 pb-12 max-w-3xl mx-auto">
-        <Card className="bg-white/80 backdrop-blur-sm shadow-sm border">
-        <h1 className="ml-4 mt-4 text-2xl font-bold text-gray-900">Create Event</h1>
-          <CardContent className="p-6">
+      <div className="max-w-3xl mx-auto px-4 py-12">
+        <Card className="bg-white shadow-md border-0">
+          <div className="border-b p-6">
+            <h2 className="text-2xl font-semibold text-gray-900">Create New Event</h2>
+            <p className="text-gray-500 mt-1">Fill in the details to schedule your event</p>
+          </div>
+          
+          <CardContent className="p-6 space-y-8">
             {/* Basic Details Section */}
             <div className="space-y-6">
               <div>
-                <Label
-                  htmlFor="title"
-                  className="text-base font-semibold block mb-2"
-                >
+                <Label htmlFor="title" className="text-sm font-medium">
                   Event Title
                 </Label>
                 <Input
                   id="title"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder="Enter a descriptive title"
-                  className="h-12 bg-white"
+                  placeholder="Enter event title"
+                  className="mt-1"
                 />
               </div>
 
               <div>
-                <Label
-                  htmlFor="description"
-                  className="text-base font-semibold block mb-2"
-                >
+                <Label htmlFor="description" className="text-sm font-medium">
                   Description
                 </Label>
                 <Textarea
@@ -136,23 +147,20 @@ export default function CreateEventPage() {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Provide details about your event"
-                  className="min-h-[120px] resize-none bg-white"
+                  className="mt-1 min-h-[120px]"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-6">
                 <div>
-                  <Label
-                    htmlFor="mode"
-                    className="text-base font-semibold block mb-2"
-                  >
+                  <Label htmlFor="mode" className="text-sm font-medium">
                     Event Mode
                   </Label>
                   <select
                     id="mode"
                     value={mode}
                     onChange={(e) => setMode(e.target.value)}
-                    className="w-full h-12 rounded-md border border-input bg-white px-3"
+                    className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                   >
                     <option value="offline">In-Person</option>
                     <option value="online">Virtual</option>
@@ -160,22 +168,16 @@ export default function CreateEventPage() {
                 </div>
 
                 <div>
-                  <Label
-                    htmlFor="eventDate"
-                    className="text-base font-semibold block mb-2"
-                  >
+                  <Label htmlFor="eventDate" className="text-sm font-medium">
                     Event Date
                   </Label>
-                  <div className="relative">
-                    <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                  <div className="relative mt-1">
+                    <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                     <input
-                      id="eventDate"
                       type="date"
-                      value={
-                        eventDate ? eventDate.toISOString().slice(0, 10) : ""
-                      }
+                      value={eventDate ? eventDate.toISOString().slice(0, 10) : ""}
                       onChange={(e) => setEventDate(new Date(e.target.value))}
-                      className="w-full h-12 pl-10 rounded-md border border-input bg-white"
+                      className="w-full rounded-md border border-input bg-background pl-10 py-2 text-sm"
                     />
                   </div>
                 </div>
@@ -183,83 +185,158 @@ export default function CreateEventPage() {
 
               {mode === "online" && (
                 <div>
-                  <Label
-                    htmlFor="link"
-                    className="text-base font-semibold block mb-2"
-                  >
+                  <Label htmlFor="link" className="text-sm font-medium">
                     Meeting Link
                   </Label>
-                  <div className="relative">
-                    <LinkIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                  <div className="relative mt-1">
+                    <LinkIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                     <Input
                       id="link"
                       value={link}
                       onChange={(e) => setLink(e.target.value)}
-                      placeholder="Paste your Google Meet link"
-                      className="pl-10 h-12 bg-white"
+                      placeholder="Paste your meeting link"
+                      className="pl-10"
                     />
                   </div>
                 </div>
               )}
+            </div>
 
-              {/* Time Slots Section */}
-              <div className="border-t pt-6 mt-6">
-                <div className="flex justify-between items-center mb-4">
-                  <Label className="text-base font-semibold">Time Slots</Label>
-                  <Button
-                    onClick={handleAddTimeSlot}
-                    variant="outline"
-                    className="gap-2 bg-white"
+            {/* Time Slots Section */}
+            <div>
+              <div className="flex justify-between items-center mb-4">
+                <Label className="text-sm font-medium">Time Slots</Label>
+                <Button
+                  onClick={handleAddTimeSlot}
+                  variant="outline"
+                  size="sm"
+                  className="text-indigo-600 border-indigo-200 hover:bg-indigo-50"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Time Slot
+                </Button>
+              </div>
+
+              <div className="space-y-4">
+                {timeSlots.map((slot, index) => (
+                  <div
+                    key={index}
+                    className="flex gap-4 items-center bg-gray-50 p-4 rounded-lg relative group"
                   >
-                    <Plus className="h-4 w-4" />
-                    Add Slot
-                  </Button>
-                </div>
+                    <Clock className="text-gray-400 h-4 w-4 flex-shrink-0" />
+                    
+                    {/* From Time */}
+                    <div className="flex gap-2 items-center flex-1">
+                      <div className="space-y-1 flex-1">
+                        <Label className="text-xs text-gray-500">From</Label>
+                        <div className="flex gap-2">
+                          <Input
+                            type="number"
+                            min="1"
+                            max="12"
+                            placeholder="HH"
+                            value={slot.hour}
+                            onChange={(e) => {
+                              const newSlots = [...timeSlots];
+                              newSlots[index].hour = e.target.value;
+                              setTimeSlots(newSlots);
+                            }}
+                            className="w-20"
+                          />
+                          <Input
+                            type="number"
+                            min="0"
+                            max="59"
+                            placeholder="MM"
+                            value={slot.minute}
+                            onChange={(e) => {
+                              const newSlots = [...timeSlots];
+                              newSlots[index].minute = e.target.value;
+                              setTimeSlots(newSlots);
+                            }}
+                            className="w-20"
+                          />
+                          <select
+                            value={slot.period}
+                            onChange={(e) => {
+                              const newSlots = [...timeSlots];
+                              newSlots[index].period = e.target.value;
+                              setTimeSlots(newSlots);
+                            }}
+                            className="w-20 rounded-md border border-input bg-background px-3 py-2 text-sm"
+                          >
+                            <option value="AM">AM</option>
+                            <option value="PM">PM</option>
+                          </select>
+                        </div>
+                      </div>
 
-                <div className="space-y-4">
-                  {timeSlots.map((slot, index) => (
-                    <div
-                      key={index}
-                      className="flex gap-4 items-center bg-white p-4 rounded-lg border"
-                    >
-                      <Clock className="text-gray-400 h-5 w-5" />
-                      <div className="flex-1 grid grid-cols-2 gap-4">
-                        <Input
-                          placeholder="Start Time"
-                          value={slot.from}
-                          onChange={(e) =>
-                            setTimeSlots(
-                              timeSlots.map((s, i) =>
-                                i === index ? { ...s, from: e.target.value } : s
-                              )
-                            )
-                          }
-                          className="h-12 bg-white"
-                        />
-                        <Input
-                          placeholder="End Time"
-                          value={slot.to}
-                          onChange={(e) =>
-                            setTimeSlots(
-                              timeSlots.map((s, i) =>
-                                i === index ? { ...s, to: e.target.value } : s
-                              )
-                            )
-                          }
-                          className="h-12 bg-white"
-                        />
+                      {/* To Time */}
+                      <div className="space-y-1 flex-1">
+                        <Label className="text-xs text-gray-500">To</Label>
+                        <div className="flex gap-2">
+                          <Input
+                            type="number"
+                            min="1"
+                            max="12"
+                            placeholder="HH"
+                            value={slot.toHour}
+                            onChange={(e) => {
+                              const newSlots = [...timeSlots];
+                              newSlots[index].toHour = e.target.value;
+                              setTimeSlots(newSlots);
+                            }}
+                            className="w-20"
+                          />
+                          <Input
+                            type="number"
+                            min="0"
+                            max="59"
+                            placeholder="MM"
+                            value={slot.toMinute}
+                            onChange={(e) => {
+                              const newSlots = [...timeSlots];
+                              newSlots[index].toMinute = e.target.value;
+                              setTimeSlots(newSlots);
+                            }}
+                            className="w-20"
+                          />
+                          <select
+                            value={slot.toPeriod}
+                            onChange={(e) => {
+                              const newSlots = [...timeSlots];
+                              newSlots[index].toPeriod = e.target.value;
+                              setTimeSlots(newSlots);
+                            }}
+                            className="w-20 rounded-md border border-input bg-background px-3 py-2 text-sm"
+                          >
+                            <option value="AM">AM</option>
+                            <option value="PM">PM</option>
+                          </select>
+                        </div>
                       </div>
                     </div>
-                  ))}
-                </div>
+
+                    {timeSlots.length > 1 && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleRemoveTimeSlot(index)}
+                        className="text-gray-400 hover:text-red-500"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                ))}
               </div>
             </div>
 
             {/* Submit Button */}
-            <div className="mt-8 flex justify-end">
+            <div className="pt-6 border-t">
               <Button
                 onClick={handleSubmit}
-                className="bg-blue-500 hover:bg-blue-600 text-white px-8 h-12"
+                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white"
               >
                 Create Event
               </Button>
@@ -268,14 +345,8 @@ export default function CreateEventPage() {
         </Card>
       </div>
 
-      {/* Success Dialog - Same as before */}
-      <Dialog
-        open={isDialogOpen}
-        onOpenChange={(open) => {
-          if (!open) router.push("/home");
-          setIsDialogOpen(open);
-        }}
-      >
+      {/* Success Dialog */}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogTitle className="flex items-center gap-2">
             <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
@@ -289,10 +360,10 @@ export default function CreateEventPage() {
               <Input
                 value={`http://localhost:3000/event/${uniqueLink}`}
                 readOnly
-                className="pr-20 h-12"
+                className="pr-20"
               />
               <Button
-                className="absolute right-1 top-1 h-10"
+                className="absolute right-1 top-1 h-8"
                 onClick={() =>
                   navigator.clipboard.writeText(
                     `http://localhost:3000/event/${uniqueLink}`
@@ -306,7 +377,7 @@ export default function CreateEventPage() {
           <DialogFooter>
             <Button
               onClick={() => router.push("/home")}
-              className="w-full h-12"
+              className="w-full"
             >
               Go to Dashboard
             </Button>

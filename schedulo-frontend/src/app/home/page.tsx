@@ -9,8 +9,7 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
-import { Calendar, Clock, PlusCircle } from "lucide-react";
-import { IoNavigate } from "react-icons/io5";
+import { Calendar, Clock, PlusCircle, PenLine, LogOut, Copy, CheckCheck } from "lucide-react";
 
 interface TimeSlot {
   from: string;
@@ -27,10 +26,11 @@ interface Event {
   slug: string;
 }
 
-export function HomePage() {
+export default function HomePage() {
   const router = useRouter();
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
 
   const handleLogout = () => {
     localStorage.removeItem("authToken");
@@ -43,6 +43,14 @@ export function HomePage() {
 
   const handleEventClick = (eventId: string) => {
     router.push(`/dashboard/analytics/${eventId}`);
+  };
+
+  const handleCopyLink = (e: React.MouseEvent, slug: string, eventId: string) => {
+    e.stopPropagation(); // Prevent card click event
+    const url = `http://localhost:3000/${slug}`;
+    navigator.clipboard.writeText(url);
+    setCopiedId(eventId);
+    setTimeout(() => setCopiedId(null), 2000); // Reset after 2 seconds
   };
 
   useEffect(() => {
@@ -74,96 +82,120 @@ export function HomePage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Simplified Navbar */}
-      <nav className="bg-white border-b px-6 h-16 flex items-center justify-between fixed w-full z-10">
-        <h1 className="text-2xl font-bold text-gray-900">Schedulo</h1>
-        <div className="flex items-center space-x-4">
-          {events.length > 0 && (
-            <Button
-              onClick={handleCreateEventClick}
-              className="bg-blue-500 hover:bg-blue-600 text-white"
+      {/* Navbar matching landing page */}
+      <nav className="py-6 px-8 bg-white border-b">
+        <div className="max-w-7xl mx-auto flex justify-between items-center">
+          <h1 className="text-2xl font-bold text-gray-900">Schedulo</h1>
+          <div className="flex items-center space-x-4">
+            {events.length > 0 && (
+              <Button
+                onClick={handleCreateEventClick}
+                className="bg-indigo-600 hover:bg-indigo-700 text-white flex items-center gap-2"
+              >
+                <PenLine className="w-4 h-4" />
+                Create Event
+              </Button>
+            )}
+            <Button 
+              variant="ghost"
+              onClick={handleLogout} 
+              className="text-gray-700 hover:text-gray-900"
             >
-              <PlusCircle className="mr-2 h-4 w-4" />
-              Create Event
+              Logout <LogOut />
             </Button>
-          )}
-          {/* Logout Button */}
-          <Button
-            onClick={handleLogout}
-            className="bg-red-500 hover:bg-red-600 text-white"
-          >
-            Logout
-          </Button>
+          </div>
         </div>
       </nav>
 
-      {/* Main Content */}
-      <div className="flex-1 pt-16 bg-gray-50">
-        {loading ? (
-          <div className="flex justify-center items-center h-64">
-            <p>Loading...</p>
-          </div>
-        ) : events.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-[calc(100vh-4rem)] bg-white">
-            <div className="bg-gray-50 p-6 rounded-full mb-6">
-              <PlusCircle className="w-16 h-16 text-blue-500" />
+      {/* Main Content with subtle background */}
+      <div className="flex-1 bg-gradient-to-br from-gray-50 to-gray-100">
+        <div className="max-w-7xl mx-auto px-8 py-8">
+          {loading ? (
+            <div className="flex justify-center items-center h-64">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
             </div>
-            <h2 className="text-2xl font-semibold text-gray-800 mb-2">
-              No Events Yet
-            </h2>
-            <p className="text-gray-600 mb-8 text-center max-w-md">
-              Get started by creating your first event. You can schedule
-              interviews, meetings, or any other type of event.
-            </p>
-            <Button
-              onClick={handleCreateEventClick}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-3 rounded-lg"
-            >
-              Create Your First Event
-            </Button>
-          </div>
-        ) : (
-          <div className="p-6">
-            <div className="max-w-7xl mx-auto">
-              <h1 className="text-2xl font-bold text-gray-800 mb-6">
-                Dashboard
-              </h1>
+          ) : events.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-[calc(100vh-12rem)] bg-white rounded-xl shadow-sm border border-gray-100">
+              <div className="bg-indigo-50 p-6 rounded-full mb-6">
+                <PlusCircle className="w-16 h-16 text-indigo-600" />
+              </div>
+              <h2 className="text-3xl font-semibold text-gray-800 mb-4">
+                No Events Yet
+              </h2>
+              <p className="text-gray-600 mb-8 text-center max-w-md text-lg">
+                Get started by creating your first event. Schedule interviews, meetings, or any other type of event.
+              </p>
+              <Button
+                onClick={handleCreateEventClick}
+                className="bg-indigo-600 hover:bg-indigo-700 text-white flex items-center gap-2"
+              >
+                <PenLine className="w-5 h-5" />
+                Create Your First Event
+              </Button>
+            </div>
+          ) : (
+            <>
+              <div className="flex justify-between items-center mb-8">
+                <h1 className="text-3xl font-bold text-gray-800">Your Events</h1>
+              </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {events.map((event) => (
                   <Card
                     key={event._id}
-                    className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:translate-y-[-2px]"
+                    className="bg-white border border-gray-200 hover:border-indigo-200 hover:shadow-lg transition-all duration-300 cursor-pointer"
                     onClick={() => handleEventClick(event._id)}
                   >
-                    <CardHeader>
+                    <CardHeader className="pb-3">
                       <CardTitle className="flex items-center justify-between">
-                        <span>{event.title}</span>
-                        <span className="text-sm px-3 py-1 bg-blue-100 text-blue-600 rounded-full">
+                        <span className="text-lg font-semibold text-gray-900">{event.title}</span>
+                        <span className="text-sm px-3 py-1 bg-indigo-50 text-indigo-600 rounded-full font-medium">
                           {event.mode}
                         </span>
                       </CardTitle>
                     </CardHeader>
-                    <CardContent>
-                      <p className="text-gray-600 line-clamp-2 mb-4">
+                    <CardContent className="pb-4">
+                      <p className="text-gray-600 line-clamp-2 mb-4 text-sm">
                         {event.description}
                       </p>
-                      <div className="space-y-3">
-                        <div className="flex items-center text-sm text-gray-500 bg-gray-50 p-2 rounded">
-                          <Calendar className="w-4 h-4 mr-2 text-blue-500" />
+
+                      <div className="space-y-2">
+                        <div className="flex items-center text-sm text-gray-600 p-2 rounded bg-gray-50">
+                          <Calendar className="w-4 h-4 mr-2 text-indigo-500" />
                           {new Date(event.eventDate).toLocaleDateString()}
                         </div>
-                        <div className="flex items-center text-sm text-gray-500 bg-gray-50 p-2 rounded">
-                          <Clock className="w-4 h-4 mr-2 text-blue-500" />
+                        <div className="flex items-center text-sm text-gray-600 p-2 rounded bg-gray-50">
+                          <Clock className="w-4 h-4 mr-2 text-indigo-500" />
                           {event.timeSlots.length} time slot(s)
                         </div>
                       </div>
                     </CardContent>
-                    <CardFooter className="border-t bg-gray-50">
+                    <CardFooter className="flex flex-col space-y-3 border-t bg-gray-50 py-3">
+                      <div className="flex items-center justify-between w-full p-2 bg-white rounded text-sm">
+                        <span className="text-gray-600 truncate mr-2">
+                          http://localhost:3000/{event.slug}
+                        </span>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="p-2 h-8 hover:bg-gray-100"
+                          onClick={(e) => handleCopyLink(e, event.slug, event._id)}
+                        >
+                          {copiedId === event._id ? (
+                            <CheckCheck className="w-4 h-4 text-green-500" />
+                          ) : (
+                            <Copy className="w-4 h-4 text-gray-500" />
+                          )}
+                        </Button>
+                      </div>
                       <div className="flex items-center justify-between w-full">
-                        <span className="text-sm text-gray-500">
+                        <span className="text-sm font-medium text-gray-600">
                           View Details
                         </span>
-                        <Button variant="ghost" size="sm">
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          className="p-0 hover:bg-transparent hover:text-indigo-600"
+                        >
                           →
                         </Button>
                       </div>
@@ -171,12 +203,10 @@ export function HomePage() {
                   </Card>
                 ))}
               </div>
-            </div>
-          </div>
-        )}
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
 }
-
-export default HomePage;

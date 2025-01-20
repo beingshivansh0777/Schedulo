@@ -38,11 +38,14 @@ export default function SignUp() {
         setPasswordError("");
       }
 
-      const response = await fetch("http://localhost:5000/api/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/signup`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, email, password }),
+        }
+      );
 
       if (response.ok) {
         setIsSuccess(true);
@@ -64,12 +67,13 @@ export default function SignUp() {
     return (
       <div className="flex flex-col items-center justify-center bg-gray-100">
         <div className="text-center p-8 bg-white shadow-md rounded-lg max-w-md">
-          <MdOutlineDoneOutline  className="w-16 h-16 text-green-500 mx-auto mb-4" />
+          <MdOutlineDoneOutline className="w-16 h-16 text-green-500 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-gray-900 mb-2">
             Account Created!
           </h2>
           <p className="text-gray-700 mb-6">
-            Your account has been successfully created. You can now log in with your email.
+            Your account has been successfully created. You can now log in with
+            your email.
           </p>
         </div>
       </div>
@@ -114,7 +118,10 @@ export default function SignUp() {
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="signup-password" className="text-gray-700 font-medium">
+          <Label
+            htmlFor="signup-password"
+            className="text-gray-700 font-medium"
+          >
             Password
           </Label>
           <Input

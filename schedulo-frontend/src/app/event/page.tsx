@@ -30,20 +30,30 @@ export default function CreateEventPage() {
   const [link, setLink] = useState("");
   const [eventDate, setEventDate] = useState<Date | undefined>(undefined);
   const [timeSlots, setTimeSlots] = useState([
-    { hour: "", minute: "", period: "AM", toHour: "", toMinute: "", toPeriod: "AM" }
+    {
+      hour: "",
+      minute: "",
+      period: "AM",
+      toHour: "",
+      toMinute: "",
+      toPeriod: "AM",
+    },
   ]);
   const [uniqueLink, setUniqueLink] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const handleAddTimeSlot = () => {
-    setTimeSlots([...timeSlots, { 
-      hour: "", 
-      minute: "", 
-      period: "AM",
-      toHour: "", 
-      toMinute: "", 
-      toPeriod: "AM" 
-    }]);
+    setTimeSlots([
+      ...timeSlots,
+      {
+        hour: "",
+        minute: "",
+        period: "AM",
+        toHour: "",
+        toMinute: "",
+        toPeriod: "AM",
+      },
+    ]);
   };
 
   const handleRemoveTimeSlot = (index: number) => {
@@ -53,9 +63,9 @@ export default function CreateEventPage() {
   };
 
   const formatTimeSlots = () => {
-    return timeSlots.map(slot => ({
+    return timeSlots.map((slot) => ({
       from: `${slot.hour}:${slot.minute} ${slot.period}`,
-      to: `${slot.toHour}:${slot.toMinute} ${slot.toPeriod}`
+      to: `${slot.toHour}:${slot.toMinute} ${slot.toPeriod}`,
     }));
   };
 
@@ -67,7 +77,7 @@ export default function CreateEventPage() {
     }
 
     try {
-      const response = await fetch("http://localhost:5000/api/events", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/events`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -118,10 +128,14 @@ export default function CreateEventPage() {
       <div className="max-w-3xl mx-auto px-4 py-12">
         <Card className="bg-white shadow-md border-0">
           <div className="border-b p-6">
-            <h2 className="text-2xl font-semibold text-gray-900">Create New Event</h2>
-            <p className="text-gray-500 mt-1">Fill in the details to schedule your event</p>
+            <h2 className="text-2xl font-semibold text-gray-900">
+              Create New Event
+            </h2>
+            <p className="text-gray-500 mt-1">
+              Fill in the details to schedule your event
+            </p>
           </div>
-          
+
           <CardContent className="p-6 space-y-8">
             {/* Basic Details Section */}
             <div className="space-y-6">
@@ -175,7 +189,9 @@ export default function CreateEventPage() {
                     <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                     <input
                       type="date"
-                      value={eventDate ? eventDate.toISOString().slice(0, 10) : ""}
+                      value={
+                        eventDate ? eventDate.toISOString().slice(0, 10) : ""
+                      }
                       onChange={(e) => setEventDate(new Date(e.target.value))}
                       className="w-full rounded-md border border-input bg-background pl-10 py-2 text-sm"
                     />
@@ -224,7 +240,7 @@ export default function CreateEventPage() {
                     className="flex gap-4 items-center bg-gray-50 p-4 rounded-lg relative group"
                   >
                     <Clock className="text-gray-400 h-4 w-4 flex-shrink-0" />
-                    
+
                     {/* From Time */}
                     <div className="flex gap-2 items-center flex-1">
                       <div className="space-y-1 flex-1">
@@ -375,10 +391,7 @@ export default function CreateEventPage() {
             </div>
           </DialogDescription>
           <DialogFooter>
-            <Button
-              onClick={() => router.push("/home")}
-              className="w-full"
-            >
+            <Button onClick={() => router.push("/home")} className="w-full">
               Go to Dashboard
             </Button>
           </DialogFooter>

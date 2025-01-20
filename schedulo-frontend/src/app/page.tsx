@@ -2,7 +2,12 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SignIn from "@/app/auth/signin/page";
 import SignUp from "@/app/auth/signup/page";
@@ -86,6 +91,7 @@ const HomePage = () => {
                     <InteractiveHoverButton>Get Started</InteractiveHoverButton>
                   </DialogTrigger>
                   <DialogContent className="sm:max-w-md">
+                    <DialogTitle />
                     <Tabs defaultValue="login" className="w-full">
                       <TabsList className="grid w-full grid-cols-2">
                         <TabsTrigger value="login">Login</TabsTrigger>

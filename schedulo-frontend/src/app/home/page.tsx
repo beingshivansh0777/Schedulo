@@ -9,7 +9,15 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
-import { Calendar, Clock, PlusCircle, PenLine, LogOut, Copy, CheckCheck } from "lucide-react";
+import {
+  Calendar,
+  Clock,
+  PlusCircle,
+  PenLine,
+  LogOut,
+  Copy,
+  CheckCheck,
+} from "lucide-react";
 
 interface TimeSlot {
   from: string;
@@ -32,6 +40,14 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
+  useEffect(() => {
+    document.title = "Schedulo - Dashboard";
+
+    return () => {
+      document.title = "Schedulo";
+    };
+  }, []);
+
   const handleLogout = () => {
     localStorage.removeItem("authToken");
     router.push("/");
@@ -45,12 +61,16 @@ export default function HomePage() {
     router.push(`/dashboard/analytics/${eventId}`);
   };
 
-  const handleCopyLink = (e: React.MouseEvent, slug: string, eventId: string) => {
-    e.stopPropagation(); // Prevent card click event
-    const url = `http://localhost:3000/${slug}`;
+  const handleCopyLink = (
+    e: React.MouseEvent,
+    slug: string,
+    eventId: string
+  ) => {
+    e.stopPropagation();
+    const url = `http://localhost:3000/event/${slug}`;
     navigator.clipboard.writeText(url);
     setCopiedId(eventId);
-    setTimeout(() => setCopiedId(null), 2000); // Reset after 2 seconds
+    setTimeout(() => setCopiedId(null), 2000);
   };
 
   useEffect(() => {
@@ -62,7 +82,7 @@ export default function HomePage() {
           return;
         }
 
-        const response = await fetch("http://localhost:5000/api/events", {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/events`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -96,9 +116,9 @@ export default function HomePage() {
                 Create Event
               </Button>
             )}
-            <Button 
+            <Button
               variant="ghost"
-              onClick={handleLogout} 
+              onClick={handleLogout}
               className="text-gray-700 hover:text-gray-900"
             >
               Logout <LogOut />
@@ -122,9 +142,6 @@ export default function HomePage() {
               <h2 className="text-3xl font-semibold text-gray-800 mb-4">
                 No Events Yet
               </h2>
-              <p className="text-gray-600 mb-8 text-center max-w-md text-lg">
-                Get started by creating your first event. Schedule interviews, meetings, or any other type of event.
-              </p>
               <Button
                 onClick={handleCreateEventClick}
                 className="bg-indigo-600 hover:bg-indigo-700 text-white flex items-center gap-2"
@@ -136,7 +153,9 @@ export default function HomePage() {
           ) : (
             <>
               <div className="flex justify-between items-center mb-8">
-                <h1 className="text-3xl font-bold text-gray-800">Your Events</h1>
+                <h1 className="text-3xl font-bold text-gray-800">
+                  Your Events
+                </h1>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {events.map((event) => (
@@ -147,7 +166,9 @@ export default function HomePage() {
                   >
                     <CardHeader className="pb-3">
                       <CardTitle className="flex items-center justify-between">
-                        <span className="text-lg font-semibold text-gray-900">{event.title}</span>
+                        <span className="text-lg font-semibold text-gray-900">
+                          {event.title}
+                        </span>
                         <span className="text-sm px-3 py-1 bg-indigo-50 text-indigo-600 rounded-full font-medium">
                           {event.mode}
                         </span>
@@ -172,13 +193,15 @@ export default function HomePage() {
                     <CardFooter className="flex flex-col space-y-3 border-t bg-gray-50 py-3">
                       <div className="flex items-center justify-between w-full p-2 bg-white rounded text-sm">
                         <span className="text-gray-600 truncate mr-2">
-                          http://localhost:3000/{event.slug}
+                          http://localhost:3000/event/{event.slug}
                         </span>
                         <Button
                           variant="ghost"
                           size="sm"
                           className="p-2 h-8 hover:bg-gray-100"
-                          onClick={(e) => handleCopyLink(e, event.slug, event._id)}
+                          onClick={(e) =>
+                            handleCopyLink(e, event.slug, event._id)
+                          }
                         >
                           {copiedId === event._id ? (
                             <CheckCheck className="w-4 h-4 text-green-500" />
@@ -191,8 +214,8 @@ export default function HomePage() {
                         <span className="text-sm font-medium text-gray-600">
                           View Details
                         </span>
-                        <Button 
-                          variant="ghost" 
+                        <Button
+                          variant="ghost"
                           size="sm"
                           className="p-0 hover:bg-transparent hover:text-indigo-600"
                         >

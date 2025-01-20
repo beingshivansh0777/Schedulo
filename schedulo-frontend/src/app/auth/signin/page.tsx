@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,13 @@ import { useRouter } from "next/navigation";
 export default function SignIn() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const token = localStorage.getItem("authToken");
+
+  useEffect(() => {
+    if (token) {
+      router.push("/home");
+    }
+  }, [router, token]);
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -19,11 +26,14 @@ export default function SignIn() {
       const email = formData.get("email");
       const password = formData.get("password");
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/login`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        }
+      );
 
       if (response.ok) {
         const { token } = await response.json();
@@ -36,6 +46,7 @@ export default function SignIn() {
       }
     } catch (error) {
       toast.error("Something went wrong. Please try again.");
+      console.log(error);
     } finally {
       setIsLoading(false);
     }
@@ -79,7 +90,6 @@ export default function SignIn() {
           />
         </div>
       </div>
-
 
       <Button
         type="submit"

@@ -4,8 +4,10 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import cors from "cors";
 import shortid from 'shortid';
+import dotenv from "dotenv";
 
 const app = express();
+app.use(cors());
 
 dotenv.config();
 

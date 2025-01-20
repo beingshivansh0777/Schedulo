@@ -169,16 +169,8 @@ export default function EventPage() {
                     </div>
 
                     {event.mode === "online" && event.link && (
-                      <div className="p-4 bg-blue-50 rounded-lg">
-                        <p className="font-medium mb-2">Meeting Link</p>
-                        <a
-                          href={event.link}
-                          className="text-blue-600 hover:underline break-all"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          {event.link}
-                        </a>
+                      <div className="p-2 bg-blue-50 rounded-lg">
+                        <p className="font-medium mb-2 italic">This is an online event, link will be shared to registered email once approved.</p> 
                       </div>
                     )}
 

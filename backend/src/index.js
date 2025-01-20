@@ -1,4 +1,3 @@
-// Backend Server - src/server/index.ts
 import express from "express";
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
@@ -7,9 +6,12 @@ import cors from "cors";
 import shortid from 'shortid';
 
 const app = express();
-const PORT = 5000;
-const MONGO_URI = "mongodb://localhost:27017/Schedulo";
-const JWT_SECRET = "your_secret_key";
+
+dotenv.config();
+
+const PORT = process.env.PORT || 5000;
+const MONGO_URI = process.env.MONGO_URI;
+const JWT_SECRET = process.env.JWT_SECRET;
 
 // Middleware
 app.use(express.json());
@@ -40,7 +42,6 @@ const asyncHandler = (fn) => {
   };
 };
 
-// Routes
 // Sign Up
 app.post(
   "/api/signup",
@@ -93,7 +94,7 @@ const eventSchema = new mongoose.Schema({
   description: { type: String },
   mode: { type: String, required: true },
   link: { type: String },
-  eventDate: { type: Date, required: true }, // Ensure this is Date type and required
+  eventDate: { type: Date, required: true },
   timeSlots: [
     {
       from: { type: String, required: true },
@@ -113,12 +114,11 @@ app.post(
   asyncHandler(async (req, res) => {
     const { title, description, mode, link, eventDate, timeSlots } = req.body;
 
-    // Check if eventDate is valid
     if (!eventDate || isNaN(new Date(eventDate))) {
       return res.status(400).json({ message: "Invalid event date" });
     }
 
-    const token = req.headers.authorization?.split(" ")[1]; // Get token from Authorization header
+    const token = req.headers.authorization?.split(" ")[1];
 
     if (!token) {
       return res.status(401).json({ message: "Unauthorized" });
@@ -135,7 +135,7 @@ app.post(
         description,
         mode,
         link,
-        eventDate: new Date(eventDate), // Convert to Date object
+        eventDate: new Date(eventDate),
         timeSlots,
         slug: slug,
         createdBy: userId,
@@ -151,12 +151,41 @@ app.post(
   })
 );
 
+// new route to fetch event by ID
+app.get('/api/events/id/:eventId', async (req, res) => {
+  const { eventId } = req.params;
+  const token = req.headers.authorization?.split(" ")[1];
+
+  if (!token) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const userId = decoded.id;
+
+    const event = await Event.findOne({
+      _id: eventId,
+      createdBy: userId
+    });
+
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    res.status(200).json({ event });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
+
+
 app.get('/api/events/:slug', async (req, res) => {
   const { slug } = req.params;
 
   try {
     const event = await Event.findOne({ slug });
-    
+
     if (!event) {
       return res.status(404).json({ message: "Event not found" });
     }
@@ -198,10 +227,49 @@ const registrationSchema = new mongoose.Schema({
     from: { type: String, required: true },
     to: { type: String, required: true }
   },
-  registeredAt: { type: Date, default: Date.now }
+  registeredAt: { type: Date, default: Date.now },
+  approved: { type: Boolean, default: false }
 });
 
 const Registration = mongoose.model("Registration", registrationSchema);
+
+app.post("/api/registrations/:registrationId/approve", asyncHandler(async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1];
+
+  if (!token) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const userId = decoded.id;
+
+    const registration = await Registration.findById(req.params.registrationId);
+    if (!registration) {
+      return res.status(404).json({ message: "Registration not found" });
+    }
+
+    const event = await Event.findOne({
+      _id: registration.eventId,
+      createdBy: userId
+    });
+
+    if (!event) {
+      return res.status(403).json({ message: "Unauthorized" });
+    }
+
+    registration.approved = true;
+    await registration.save();
+
+    res.status(200).json({
+      message: "Registration approved",
+      registration: registration
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+}));
 
 
 app.post("/api/events/:slug/register", asyncHandler(async (req, res) => {

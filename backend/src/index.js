@@ -5,6 +5,8 @@ import jwt from "jsonwebtoken";
 import cors from "cors";
 import shortid from 'shortid';
 import dotenv from "dotenv";
+import checkBlacklistedToken from './middleware/auth.js'; // Use import instead of require
+import BlacklistedModel from './models/blacklisted.js'
 
 const app = express();
 app.use(cors());
@@ -19,11 +21,13 @@ const JWT_SECRET = process.env.JWT_SECRET;
 app.use(express.json());
 app.use(cors());
 
+
 // Mongoose connection
 mongoose
   .connect(MONGO_URI)
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.error("MongoDB connection error:", err));
+
 
 // User Schema and Model
 const userSchema = new mongoose.Schema({
@@ -31,7 +35,7 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
 });
 
-const User = mongoose.model("User", userSchema);
+const User = mongoose.model("User", userSchema); s
 
 // Utility function to handle async errors
 /**
@@ -64,6 +68,10 @@ app.post(
   })
 );
 
+
+// Logout
+
+
 // Login
 app.post(
   "/api/login",
@@ -90,6 +98,30 @@ app.post(
   })
 );
 
+
+// app.use(checkBlacklistedToken);
+
+
+app.get(
+  "/api/logout",
+  asyncHandler(async (req, res) => {
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    try {
+      jwt.verify(token, JWT_SECRET);
+      const blacklisted = new BlacklistedModel({ token });
+      blacklisted.save()
+      res.clearCookie('authToken');
+      res.status(200).json({ message: "Logout successful" });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal Server Error" });
+    }
+  })
+);
+
 // Event Schema and Model
 const eventSchema = new mongoose.Schema({
   title: { type: String, required: true },
@@ -97,6 +129,7 @@ const eventSchema = new mongoose.Schema({
   mode: { type: String, required: true },
   link: { type: String },
   eventDate: { type: Date, required: true },
+  registrationLimit: { type: Number },
   timeSlots: [
     {
       from: { type: String, required: true },
@@ -114,7 +147,7 @@ const Event = mongoose.model("Event", eventSchema);
 app.post(
   "/api/events",
   asyncHandler(async (req, res) => {
-    const { title, description, mode, link, eventDate, timeSlots } = req.body;
+    const { title, description, mode, link, eventDate, registrationLimit, timeSlots } = req.body;
 
     if (!eventDate || isNaN(new Date(eventDate))) {
       return res.status(400).json({ message: "Invalid event date" });
@@ -138,6 +171,7 @@ app.post(
         mode,
         link,
         eventDate: new Date(eventDate),
+        registrationLimit,
         timeSlots,
         slug: slug,
         createdBy: userId,
@@ -326,6 +360,44 @@ app.get("/api/events/:eventId/registrations", asyncHandler(async (req, res) => {
       .sort({ registeredAt: -1 });
 
     res.status(200).json({ registrations });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+}));
+
+// Get total number of registered users for an event by slug
+app.get("/api/events/:slug/registrations/count", asyncHandler(async (req, res) => {
+  const { slug } = req.params;
+
+  try {
+    const event = await Event.findOne({ slug });
+
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    const registrationCount = await Registration.countDocuments({ eventId: event._id });
+
+    res.status(200).json({ count: registrationCount });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+}));
+
+// Get registration limit for an event by slug
+app.get("/api/events/:slug/registration-limit", asyncHandler(async (req, res) => {
+  const { slug } = req.params;
+
+  try {
+    const event = await Event.findOne({ slug });
+
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    res.status(200).json({ registrationLimit: event.registrationLimit });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal Server Error" });

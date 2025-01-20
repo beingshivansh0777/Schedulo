@@ -48,7 +48,17 @@ export default function HomePage() {
     };
   }, []);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    const token = localStorage.getItem("authToken");
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/logout`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    console.log(response);
     localStorage.removeItem("authToken");
     router.push("/");
   };
@@ -82,11 +92,14 @@ export default function HomePage() {
           return;
         }
 
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/events`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/events`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
         const data = await response.json();
         setEvents(data.events || []);
@@ -193,7 +206,7 @@ export default function HomePage() {
                     <CardFooter className="flex flex-col space-y-3 border-t bg-gray-50 py-3">
                       <div className="flex items-center justify-between w-full p-2 bg-white rounded text-sm">
                         <span className="text-gray-600 truncate mr-2">
-                        https://schedulo-eight.vercel.app/event/{event.slug}
+                          https://schedulo-eight.vercel.app/event/{event.slug}
                         </span>
                         <Button
                           variant="ghost"

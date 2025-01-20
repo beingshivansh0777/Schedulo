@@ -67,7 +67,7 @@ export default function HomePage() {
     eventId: string
   ) => {
     e.stopPropagation();
-    const url = `http://localhost:3000/event/${slug}`;
+    const url = `https://schedulo-eight.vercel.app/event/${slug}`;
     navigator.clipboard.writeText(url);
     setCopiedId(eventId);
     setTimeout(() => setCopiedId(null), 2000);
@@ -193,7 +193,7 @@ export default function HomePage() {
                     <CardFooter className="flex flex-col space-y-3 border-t bg-gray-50 py-3">
                       <div className="flex items-center justify-between w-full p-2 bg-white rounded text-sm">
                         <span className="text-gray-600 truncate mr-2">
-                          http://localhost:3000/event/{event.slug}
+                        https://schedulo-eight.vercel.app/event/{event.slug}
                         </span>
                         <Button
                           variant="ghost"

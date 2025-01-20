@@ -374,7 +374,7 @@ export default function CreateEventPage() {
             <p>Share this link with your participants:</p>
             <div className="relative">
               <Input
-                value={`http://localhost:3000/event/${uniqueLink}`}
+                value={`https://schedulo-eight.vercel.app/event/${uniqueLink}`}
                 readOnly
                 className="pr-20"
               />
@@ -382,7 +382,7 @@ export default function CreateEventPage() {
                 className="absolute right-1 top-1 h-8"
                 onClick={() =>
                   navigator.clipboard.writeText(
-                    `http://localhost:3000/event/${uniqueLink}`
+                    `https://schedulo-eight.vercel.app/event/${uniqueLink}`
                   )
                 }
               >

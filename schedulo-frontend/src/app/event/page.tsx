@@ -116,6 +116,7 @@ export default function CreateEventPage() {
       );
 
       const data = await response.json();
+      console.log(response.body);
       if (response.ok) {
         setUniqueLink(data.event.slug);
         setIsDialogOpen(true);

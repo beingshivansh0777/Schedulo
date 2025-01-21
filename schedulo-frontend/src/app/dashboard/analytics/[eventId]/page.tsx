@@ -164,6 +164,7 @@ export default function AnalyticsPage() {
   }, [filters, registrations]);
 
   const sendApprovalEmail = async (registration: Registration) => {
+    // console.log("Sending approval email to:", registration.email);
     if (!currentEvent) {
       throw new Error("Event details not available");
     }
@@ -171,13 +172,12 @@ export default function AnalyticsPage() {
     try {
       const templateId =
         currentEvent.mode.toLowerCase() === "online"
-        ? process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID_ONLINE
-        : process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID_OFFLINE;
+          ? process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID_ONLINE
+          : process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID_OFFLINE;
 
       const templateParams = {
-        to_name: registration.name,
         to_email: registration.email,
-        email: registration.email,
+        to_name: registration.name,
         event_name: currentEvent.title,
         event_mode: currentEvent.mode,
         event_date: format(new Date(currentEvent.eventDate), "MMMM dd, yyyy"),
@@ -189,7 +189,11 @@ export default function AnalyticsPage() {
             : undefined,
       };
 
-      await emailjs.send(process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!, templateId!, templateParams);
+      await emailjs.send(
+        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!,
+        templateId!,
+        templateParams
+      );
       return true;
     } catch (error) {
       console.error("Email error:", error);

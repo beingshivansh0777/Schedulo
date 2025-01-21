@@ -8,8 +8,13 @@ import { useRouter } from "next/navigation";
 
 export default function SignIn() {
   const [isLoading, setIsLoading] = useState(false);
+  const [token, setToken] = useState<string | null>(null);
   const router = useRouter();
-  const token = localStorage.getItem("authToken");
+
+  useEffect(() => {
+    const storedToken = localStorage.getItem("authToken");
+    setToken(storedToken);
+  }, []);
 
   useEffect(() => {
     if (token) {

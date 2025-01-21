@@ -51,7 +51,7 @@ const HomePage = () => {
                 <Button variant="ghost">About</Button>
 
                 <a
-                  href="https://github.com/mukundsolanki"
+                  href="https://github.com/mukundsolanki/Schedulo"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -112,7 +112,27 @@ const HomePage = () => {
 
           {/* Footer */}
           <footer className="text-center text-base text-gray-600 py-4 flex-shrink-0">
-            <p>Designed by Mukund Solanki</p>
+            <p>
+              © 2025 Schedulo.{" "}
+              <a
+                href="https://github.com/mukundsolanki/Schedulo/blob/main/LICENSE"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:underline"
+              >
+                MIT Licensed
+              </a>
+              . Contribute on{" "}
+              <a
+                href="https://github.com/mukundsolanki/Schedulo"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:underline"
+              >
+                Github
+              </a>
+              .
+            </p>
           </footer>
         </div>
       </div>

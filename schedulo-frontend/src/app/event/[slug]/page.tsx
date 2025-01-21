@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Calendar, Clock, Globe, MapPin } from "lucide-react";
+import { Calendar, Clock, Globe, MapPin, Users, TicketX } from "lucide-react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -50,6 +50,7 @@ export default function EventPage() {
     email: "",
     selectedTimeSlot: null,
   });
+
   useEffect(() => {
     const fetchEvent = async () => {
       try {
@@ -110,68 +111,10 @@ export default function EventPage() {
       fetchRegistrationLimit();
       fetchEvent();
     }
-  }, []);
-
-  // const showToastSuccess = (message: string) => {
-  //   toast.success(message);
-  // };
+  }, [params.slug]);
 
   const showToastError = (message: string) => {
     toast.error(message);
-  };
-
-  if (maxCount != 0 && count >= maxCount) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div
-          className="absolute inset-0 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50"
-          style={{
-            backgroundImage: `
-              linear-gradient(to bottom right, rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.1)),
-              linear-gradient(rgba(99, 102, 241, 0.05) 2px, transparent 2px),
-              linear-gradient(90deg, rgba(99, 102, 241, 0.05) 2px, transparent 2px)
-            `,
-            backgroundSize: "100% 100%, 20px 20px, 20px 20px",
-          }}
-        />
-        <div className="z-10 min-h-screen w-full bg-gradient-to-br flex justify-center items-center">
-          <div className="bg-white p-8 rounded-lg shadow-lg text-center">
-            <h1 className="text-2xl font-bold text-red-600 mb-4">
-              Registration Limit Reached
-            </h1>
-            <p className="text-gray-700">
-              Please contact the organizer to change the registration limit.
-            </p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!form.selectedTimeSlot) {
-      // setError("Please select a time slot");
-      showToastError("Please select a time slot");
-      return;
-    }
-
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/events/${params.slug}/register`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(form),
-        }
-      );
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.message || "Registration failed");
-      setRegistrationSuccess(true);
-      setForm({ name: "", email: "", selectedTimeSlot: null });
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Registration failed");
-    }
   };
 
   if (loading) {
@@ -196,6 +139,73 @@ export default function EventPage() {
       </div>
     );
   }
+
+  if (maxCount !== 0 && count >= maxCount) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div
+          className="absolute inset-0 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50"
+          style={{
+            backgroundImage: `
+              linear-gradient(to bottom right, rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.1)),
+              linear-gradient(rgba(99, 102, 241, 0.05) 2px, transparent 2px),
+              linear-gradient(90deg, rgba(99, 102, 241, 0.05) 2px, transparent 2px)
+            `,
+            backgroundSize: "100% 100%, 20px 20px, 20px 20px",
+          }}
+        />
+        <div className="z-10 min-h-screen w-full bg-gradient-to-br flex justify-center items-center">
+          <div className="bg-white p-8 rounded-lg shadow-lg text-center space-y-4">
+            <div className="flex justify-center">
+              <TicketX className="h-16 w-16 text-red-500" />
+            </div>
+            <h1 className="text-2xl font-bold text-red-600">
+              Oops, the registration for this event is full
+            </h1>
+            <p className="text-gray-700">
+              Try contacting the administrator for assistance
+            </p>
+            <p className="w-full">
+              Created with{" "}
+              <a
+                href="https://schedulo-eight.vercel.app"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:underline"
+              >
+                Schedulo
+              </a>
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.selectedTimeSlot) {
+      showToastError("Please select a time slot");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/events/${params.slug}/register`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(form),
+        }
+      );
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || "Registration failed");
+      setRegistrationSuccess(true);
+      setForm({ name: "", email: "", selectedTimeSlot: null });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Registration failed");
+    }
+  };
 
   return (
     <>
@@ -231,7 +241,7 @@ export default function EventPage() {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-6">
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-3 gap-4">
                         <div className="flex items-center space-x-3 p-4 bg-gray-50 rounded-lg">
                           <Calendar className="h-5 w-5 text-blue-600" />
                           <div>
@@ -254,6 +264,17 @@ export default function EventPage() {
                             <p className="text-sm text-gray-500">Mode</p>
                             <p className="font-medium capitalize">
                               {event.mode}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-3 p-4 bg-gray-50 rounded-lg">
+                          <Users className="h-5 w-5 text-blue-600" />
+                          <div>
+                            <p className="text-sm text-gray-500">Capacity</p>
+                            <p className="font-medium">
+                              {maxCount === 0
+                                ? "Available"
+                                : `${count} / ${maxCount}`}
                             </p>
                           </div>
                         </div>
@@ -281,12 +302,12 @@ export default function EventPage() {
                                 setForm({ ...form, selectedTimeSlot: slot })
                               }
                               className={`p-3 rounded-lg text-sm font-medium transition-all
-                  ${
-                    form.selectedTimeSlot?.from === slot.from &&
-                    form.selectedTimeSlot?.to === slot.to
-                      ? "bg-blue-100 text-black ring-2 ring-green-600"
-                      : "bg-white hover:bg-gray-50 text-gray-700 border border-gray-200"
-                  }`}
+                                ${
+                                  form.selectedTimeSlot?.from === slot.from &&
+                                  form.selectedTimeSlot?.to === slot.to
+                                    ? "bg-blue-100 text-black ring-2 ring-green-600"
+                                    : "bg-white hover:bg-gray-50 text-gray-700 border border-gray-200"
+                                }`}
                             >
                               {slot.from} - {slot.to}
                             </button>
@@ -366,7 +387,7 @@ export default function EventPage() {
                     <p className="w-full">
                       Created with{" "}
                       <a
-                        href="https://github.com/mukundsolanki"
+                        href="https://schedulo-eight.vercel.app"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-blue-600 hover:underline"

@@ -11,6 +11,8 @@ export default function SignUp() {
   const [isLoading, setIsLoading] = useState(false);
   const [passwordError, setPasswordError] = useState("");
   const [isSuccess, setIsSuccess] = useState(false);
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const router = useRouter();
 
   const validatePassword = (password: string): boolean => {

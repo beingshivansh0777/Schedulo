@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Search, SlidersHorizontal } from "lucide-react";
+import { Search } from "lucide-react";
 
 interface Registration {
   _id: string;
@@ -60,6 +60,7 @@ export default function AnalyticsPage() {
     timeSlot: "all",
     showApproved: true,
   });
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [uniqueTimeSlots, setUniqueTimeSlots] = useState<string[]>([]);
 
   useEffect(() => {

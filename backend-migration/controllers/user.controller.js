@@ -16,7 +16,7 @@ module.exports.userSignup = async (req, res, next) => {
         if (existingUser) {
             return res.status(400).json({ message: 'Email already exists' });
         }
-        const hashedPassword = await existingUser.hashPassword(password);
+        const hashedPassword = await userModel.hashPassword(password);
         const user = await userService.createUser({ name, email, password: hashedPassword });
         return res.status(201).json({ message: 'User created successfully', _id: user._id });
 
@@ -34,7 +34,7 @@ module.exports.userLogin = async (req, res, next) => {
     try {
         const { email, password } = req.body;
         const user = await userModel.findOne({ email }).select('+password');;
-        console.log(user)
+        // console.log(user)
         if (!user) {
             return res.status(400).json({ message: 'Invalid email' });
         }

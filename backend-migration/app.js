@@ -19,7 +19,7 @@ app.use(urlencoded({ extended: true }));
 app.use(cookieParser());
 
 app.get('/', (req, res) => {
-    res.status(200).json({ message: 'Server is active' });
+    res.status(200).json({ message: 'Cron job endpoint hit successfully' });
 });
 
 app.use('/api', userRoutes);

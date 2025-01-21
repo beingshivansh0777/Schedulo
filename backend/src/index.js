@@ -232,6 +232,8 @@ app.get('/api/events/:slug', async (req, res) => {
   }
 });
 
+// OPEN -->
+
 // Get Events Route
 app.get(
   "/api/events",

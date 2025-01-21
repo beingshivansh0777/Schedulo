@@ -25,6 +25,10 @@ const eventSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    slug: {
+        type: String,
+        unique: true
+    },
     timeSlots: [{
         from: {
             type: String,
@@ -35,7 +39,7 @@ const eventSchema = new mongoose.Schema({
             required: true
         }
     }],
-    userId: {
+    createdBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
         required: true

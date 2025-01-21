@@ -89,6 +89,7 @@ Before getting started with Schedulo, ensure your runtime environment meets the 
         NEXT_PUBLIC_EMAILJS_TEMPLATE_ID_ONLINE=emailjs_online_template_id
         NEXT_PUBLIC_EMAILJS_TEMPLATE_ID_OFFLINE=emailjs_offline_template_id
         NEXT_PUBLIC_EMAILJS_PUBLIC_KEY=emailjs_public_key
+        NEXT_DEPLOYED_URL=http://localhost:3000
     ```
 
 - **Backend env:**
@@ -132,34 +133,11 @@ Install Schedulo locally using one of the following methods:
 
 ## 🔰 Contributing
 
+Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on how to contribute to this project.
+
 - **💬 [Join the Discussions](https://github.com/mukundsolanki/Schedulo/discussions)**: Share your insights, provide feedback, or ask questions.
 - **🐛 [Report Issues](https://github.com/mukundsolanki/Schedulo/issues)**: Submit bugs found or log feature requests for the `Schedulo` project.
 - **💡 [Submit Pull Requests](https://github.com/mukundsolanki/Schedulo/CONTRIBUTING.md)**: Review open PRs, and submit your own PRs.
-
-<details closed>
-<summary>Contributing Guidelines</summary>
-
-1. **Fork the Repository**: Start by forking the project repository to your github account.
-2. **Clone Locally**: Clone the forked repository to your local machine using a git client.
-   ```sh
-   git clone https://github.com/mukundsolanki/Schedulo
-   ```
-3. **Create a New Branch**: Always work on a new branch, giving it a descriptive name.
-   ```sh
-   git checkout -b new-feature-x
-   ```
-4. **Make Your Changes**: Develop and test your changes locally.
-5. **Commit Your Changes**: Commit with a clear message describing your updates.
-   ```sh
-   git commit -m 'Implemented new feature x.'
-   ```
-6. **Push to github**: Push the changes to your forked repository.
-   ```sh
-   git push origin new-feature-x
-   ```
-7. **Submit a Pull Request**: Create a PR against the original project repository. Clearly describe the changes and their motivations.
-8. **Review**: Once your PR is reviewed and approved, it will be merged into the main branch. Congratulations on your contribution!
-</details>
 
 <details closed>
 <summary>Contributor Graph</summary>

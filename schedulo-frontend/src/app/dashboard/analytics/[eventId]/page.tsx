@@ -6,7 +6,17 @@ import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { FaUsers } from "react-icons/fa";
 import emailjs from "@emailjs/browser";
-import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { Search, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface Registration {
   _id: string;
@@ -29,15 +39,33 @@ interface Event {
   eventDate: string;
 }
 
+interface Filters {
+  search: string;
+  dateSort: "newest" | "oldest";
+  timeSlot: string;
+  showApproved: boolean;
+}
+
 export default function AnalyticsPage() {
   const params = useParams();
   const [registrations, setRegistrations] = useState<Registration[]>([]);
+  const [filteredRegistrations, setFilteredRegistrations] = useState<
+    Registration[]
+  >([]);
   const [currentEvent, setCurrentEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [loadingButtons, setLoadingButtons] = useState<Record<string, boolean>>(
     {}
   );
+  const [filters, setFilters] = useState<Filters>({
+    search: "",
+    dateSort: "newest",
+    timeSlot: "all",
+    showApproved: true,
+  });
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [uniqueTimeSlots, setUniqueTimeSlots] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
@@ -107,6 +135,58 @@ export default function AnalyticsPage() {
     }
   }, [params.eventId]);
 
+  // Apply filters to registrations
+  useEffect(() => {
+    let filtered = [...registrations];
+
+    // Search filter
+    if (filters.search) {
+      const searchTerm = filters.search.toLowerCase();
+      filtered = filtered.filter(
+        (reg) =>
+          reg.name.toLowerCase().includes(searchTerm) ||
+          reg.email.toLowerCase().includes(searchTerm)
+      );
+    }
+
+    // Date sort
+    filtered.sort((a, b) => {
+      const dateA = new Date(a.registeredAt).getTime();
+      const dateB = new Date(b.registeredAt).getTime();
+      return filters.dateSort === "newest" ? dateB - dateA : dateA - dateB;
+    });
+
+    // Time slot filter
+    if (filters.timeSlot !== "all") {
+      filtered = filtered.filter(
+        (reg) =>
+          `${reg.selectedTimeSlot.from} - ${reg.selectedTimeSlot.to}` ===
+          filters.timeSlot
+      );
+    }
+
+    // Approved status filter
+    if (!filters.showApproved) {
+      filtered = filtered.filter((reg) => !reg.approved);
+    }
+
+    setFilteredRegistrations(filtered);
+  }, [filters, registrations]);
+
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filters]);
+
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredRegistrations.length / itemsPerPage);
+  const pageStartIndex = (currentPage - 1) * itemsPerPage;
+  const pageEndIndex = pageStartIndex + itemsPerPage;
+  const currentPageItems = filteredRegistrations.slice(
+    pageStartIndex,
+    pageEndIndex
+  );
+
   const sendApprovalEmail = async (registration: Registration) => {
     // console.log("Sending approval email to:", registration.email);
     if (!currentEvent) {
@@ -175,14 +255,32 @@ export default function AnalyticsPage() {
     }
   };
 
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = registrations.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(registrations.length / itemsPerPage);
+  const renderPageNumbers = () => {
+    const pages = [];
+    const maxVisiblePages = 5;
 
-  const handlePageChange = (pageNumber: number) => {
-    setCurrentPage(pageNumber);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+    if (endPage - startPage + 1 < maxVisiblePages) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(
+        <Button
+          key={i}
+          variant={currentPage === i ? "default" : "outline"}
+          className={`w-10 h-10 p-0 ${
+            currentPage === i ? "bg-black text-white" : ""
+          }`}
+          onClick={() => setCurrentPage(i)}
+        >
+          {i}
+        </Button>
+      );
+    }
+    return pages;
   };
 
   if (loading) {
@@ -218,16 +316,91 @@ export default function AnalyticsPage() {
           </div>
         </div>
 
-        {registrations.length === 0 ? (
+        {/* Filters Section */}
+        <div className="mb-6 space-y-4">
           <Card>
             <CardContent className="p-6">
-              <p>No registrations yet for this event.</p>
+              <div className="flex flex-col space-y-4 md:flex-row md:space-y-0 md:space-x-4">
+                {/* Search Bar */}
+                <div className="flex-1">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                    <Input
+                      placeholder="Search by name or email..."
+                      value={filters.search}
+                      onChange={(e) =>
+                        setFilters((prev) => ({
+                          ...prev,
+                          search: e.target.value,
+                        }))
+                      }
+                      className="pl-9"
+                    />
+                  </div>
+                </div>
+
+                {/* Date Sort */}
+                <Select
+                  value={filters.dateSort}
+                  onValueChange={(value: "newest" | "oldest") =>
+                    setFilters((prev) => ({ ...prev, dateSort: value }))
+                  }
+                >
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Sort by date" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="newest">Newest First</SelectItem>
+                    <SelectItem value="oldest">Oldest First</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                {/* Time Slot Filter */}
+                <Select
+                  value={filters.timeSlot}
+                  onValueChange={(value) =>
+                    setFilters((prev) => ({ ...prev, timeSlot: value }))
+                  }
+                >
+                  <SelectTrigger className="w-[200px]">
+                    <SelectValue placeholder="Filter by time slot" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Time Slots</SelectItem>
+                    {uniqueTimeSlots.map((slot) => (
+                      <SelectItem key={slot} value={slot}>
+                        {slot}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                {/* Show/Hide Approved Toggle */}
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="show-approved"
+                    checked={filters.showApproved}
+                    onCheckedChange={(checked) =>
+                      setFilters((prev) => ({ ...prev, showApproved: checked }))
+                    }
+                  />
+                  <Label htmlFor="show-approved">Show Approved</Label>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {filteredRegistrations.length === 0 ? (
+          <Card>
+            <CardContent className="p-6">
+              <p>No registrations found matching your filters.</p>
             </CardContent>
           </Card>
         ) : (
           <>
             <div className="space-y-4">
-              {currentItems.map((registration) => (
+              {currentPageItems.map((registration) => (
                 <Card
                   key={registration._id}
                   className="shadow-lg hover:shadow-xl transition duration-300 ease-in-out"
@@ -282,34 +455,34 @@ export default function AnalyticsPage() {
             </div>
 
             {/* Pagination Controls */}
-            <div className="mt-6 flex justify-center gap-2">
-              <Button
-                variant="outline"
-                onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1}
-              >
-                <ChevronLeftIcon className="h-4 w-4" />
-              </Button>
+            <div className="mt-6 flex flex-col items-center gap-4">
+              <p className="text-sm text-gray-600">
+                Showing {pageStartIndex + 1} to{" "}
+                {Math.min(pageEndIndex, filteredRegistrations.length)} of{" "}
+                {filteredRegistrations.length} results
+              </p>
 
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                (page) => (
-                  <Button
-                    key={page}
-                    variant={currentPage === page ? "default" : "outline"}
-                    onClick={() => handlePageChange(page)}
-                  >
-                    {page}
-                  </Button>
-                )
-              )}
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  className="w-10 h-10 p-0"
+                  onClick={() => setCurrentPage((prev) => prev - 1)}
+                  disabled={currentPage === 1}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
 
-              <Button
-                variant="outline"
-                onClick={() => handlePageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
-              >
-                <ChevronRightIcon className="h-4 w-4" />
-              </Button>
+                {renderPageNumbers()}
+
+                <Button
+                  variant="outline"
+                  className="w-10 h-10 p-0"
+                  onClick={() => setCurrentPage((prev) => prev + 1)}
+                  disabled={currentPage === totalPages}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
           </>
         )}

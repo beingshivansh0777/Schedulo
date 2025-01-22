@@ -151,8 +151,7 @@ module.exports.getRegistrationCount = async (req, res, next) => {
             return res.status(404).json({ message: "Event not found" });
         }
 
-        const registrationCount = await RegistrationModel.countDocuments({ eventId: event._id });
-
+        const registrationCount = await RegistrationModel.countDocuments({ eventId: event._id, approved: true });
         res.status(200).json({ count: registrationCount });
     } catch (error) {
         console.error(error);

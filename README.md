@@ -1,6 +1,5 @@
 <p align="center">
-    <img src="https://github.com/user-attachments/assets/03110828-1e5c-4452-b91b-b3f93c2481c5" align="center">
-
+    <img src="https://github.com/user-attachments/assets/3d4e2744-e905-4eae-b179-cdab8dfb24ee" align="center">
 </p>
 <p align="center"><h1 align="center">SCHEDULO</h1></p>
 <p align="center">

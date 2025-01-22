@@ -2,7 +2,6 @@ const userModel = require('../models/user.model');
 const userService = require('../services/user.service');
 const { validationResult } = require('express-validator');
 const BlacklistTokenModel = require('../models/blacklistToken.model');
-const redis = require('../db/redis');
 
 
 module.exports.userSignup = async (req, res, next) => {
@@ -35,6 +34,7 @@ module.exports.userLogin = async (req, res, next) => {
     try {
         const { email, password } = req.body;
         const user = await userModel.findOne({ email }).select('+password');;
+        // console.log(user)
         if (!user) {
             return res.status(400).json({ message: 'Invalid email' });
         }
@@ -42,21 +42,8 @@ module.exports.userLogin = async (req, res, next) => {
         if (!isValid) {
             return res.status(400).json({ message: 'Invalid password' });
         }
-
-        const userKey = `user:${user._id}`;
-        await redis.del(`user:${user._id}`);
-        await redis.del(`events:${user._id}`);
-
         const token = user.generateAuthToken();
         res.cookie('authToken', token);
-
-        const userObject = user.toObject();
-        const { _id, ...rest } = userObject;
-        delete rest.password; // Remove password from user object
-        await redis.set(userKey, JSON.stringify({
-            ...rest,
-            id: _id.toString()
-        }), 'EX', 60 * 10); // This will help to store data for first 60 minutes of activity
         return res.status(200).json({ message: 'Login successful', token });
 
     } catch (err) {

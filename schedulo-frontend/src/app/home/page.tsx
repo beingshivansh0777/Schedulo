@@ -18,7 +18,6 @@ import {
   Copy,
   CheckCheck,
 } from "lucide-react";
-import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
 
 interface TimeSlot {
   from: string;
@@ -40,8 +39,6 @@ export default function HomePage() {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [copiedId, setCopiedId] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6; // 6 events per page (2 rows x 3 columns)
 
   useEffect(() => {
     document.title = "Schedulo - Dashboard";
@@ -105,6 +102,7 @@ export default function HomePage() {
         );
 
         const data = await response.json();
+        console.log(data);
         setEvents(data.events || []);
       } catch (error) {
         console.error("Failed to fetch events:", error);
@@ -115,17 +113,6 @@ export default function HomePage() {
 
     fetchEvents();
   }, [router]);
-
-  // Add pagination helper functions
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentEvents = events.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(events.length / itemsPerPage);
-
-  const handlePageChange = (pageNumber: number) => {
-    setCurrentPage(pageNumber);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -185,7 +172,7 @@ export default function HomePage() {
                 </h1>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {currentEvents.map((event) => (
+                {events.map((event) => (
                   <Card
                     key={event._id}
                     className="bg-white border border-gray-200 hover:border-indigo-200 hover:shadow-lg transition-all duration-300 cursor-pointer"
@@ -253,39 +240,6 @@ export default function HomePage() {
                   </Card>
                 ))}
               </div>
-
-              {/* Pagination Controls */}
-              {events.length > itemsPerPage && (
-                <div className="mt-8 flex justify-center gap-2">
-                  <Button
-                    variant="outline"
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    disabled={currentPage === 1}
-                  >
-                    <ChevronLeftIcon className="h-4 w-4" />
-                  </Button>
-
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                    (page) => (
-                      <Button
-                        key={page}
-                        variant={currentPage === page ? "default" : "outline"}
-                        onClick={() => handlePageChange(page)}
-                      >
-                        {page}
-                      </Button>
-                    )
-                  )}
-
-                  <Button
-                    variant="outline"
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    disabled={currentPage === totalPages}
-                  >
-                    <ChevronRightIcon className="h-4 w-4" />
-                  </Button>
-                </div>
-              )}
             </>
           )}
         </div>

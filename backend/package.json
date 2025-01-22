@@ -4,7 +4,8 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon server.js"
+    "start": "nodemon server.js",
+    "dev":"nodemon server.js",
   },
   "author": "",
   "license": "ISC",
@@ -16,8 +17,12 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "express-validator": "^7.2.1",
+    "ioredis": "^5.4.2",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.9.5",
+    "nodemon": "^3.1.9",
+    "redis": "^4.7.0",
+    "redis-cli": "^2.1.2",
     "shortid": "^2.2.16"
   }
 }

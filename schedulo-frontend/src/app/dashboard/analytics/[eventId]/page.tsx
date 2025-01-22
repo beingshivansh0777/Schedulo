@@ -6,7 +6,17 @@ import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { FaUsers } from "react-icons/fa";
 import emailjs from "@emailjs/browser";
-import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { Search } from "lucide-react";
 
 interface Registration {
   _id: string;
@@ -29,17 +39,29 @@ interface Event {
   eventDate: string;
 }
 
+interface Filters {
+  search: string;
+  dateSort: "newest" | "oldest";
+  timeSlot: string;
+  showApproved: boolean;
+}
+
 export default function AnalyticsPage() {
   const params = useParams();
   const [registrations, setRegistrations] = useState<Registration[]>([]);
+  const [filteredRegistrations, setFilteredRegistrations] = useState<Registration[]>([]);
   const [currentEvent, setCurrentEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [loadingButtons, setLoadingButtons] = useState<Record<string, boolean>>(
-    {}
-  );
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
+  const [loadingButtons, setLoadingButtons] = useState<Record<string, boolean>>({});
+  const [filters, setFilters] = useState<Filters>({
+    search: "",
+    dateSort: "newest",
+    timeSlot: "all",
+    showApproved: true,
+  });
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [uniqueTimeSlots, setUniqueTimeSlots] = useState<string[]>([]);
 
   useEffect(() => {
     emailjs.init(process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY!);
@@ -106,6 +128,41 @@ export default function AnalyticsPage() {
       fetchRegistrations();
     }
   }, [params.eventId]);
+
+  // Apply filters to registrations
+  useEffect(() => {
+    let filtered = [...registrations];
+
+    // Search filter
+    if (filters.search) {
+      const searchTerm = filters.search.toLowerCase();
+      filtered = filtered.filter(
+        reg => reg.name.toLowerCase().includes(searchTerm) || 
+               reg.email.toLowerCase().includes(searchTerm)
+      );
+    }
+
+    // Date sort
+    filtered.sort((a, b) => {
+      const dateA = new Date(a.registeredAt).getTime();
+      const dateB = new Date(b.registeredAt).getTime();
+      return filters.dateSort === "newest" ? dateB - dateA : dateA - dateB;
+    });
+
+    // Time slot filter
+    if (filters.timeSlot !== "all") {
+      filtered = filtered.filter(
+        reg => `${reg.selectedTimeSlot.from} - ${reg.selectedTimeSlot.to}` === filters.timeSlot
+      );
+    }
+
+    // Approved status filter
+    if (!filters.showApproved) {
+      filtered = filtered.filter(reg => !reg.approved);
+    }
+
+    setFilteredRegistrations(filtered);
+  }, [filters, registrations]);
 
   const sendApprovalEmail = async (registration: Registration) => {
     // console.log("Sending approval email to:", registration.email);
@@ -175,16 +232,6 @@ export default function AnalyticsPage() {
     }
   };
 
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = registrations.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(registrations.length / itemsPerPage);
-
-  const handlePageChange = (pageNumber: number) => {
-    setCurrentPage(pageNumber);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -218,100 +265,132 @@ export default function AnalyticsPage() {
           </div>
         </div>
 
-        {registrations.length === 0 ? (
+        {/* Filters Section */}
+        <div className="mb-6 space-y-4">
           <Card>
             <CardContent className="p-6">
-              <p>No registrations yet for this event.</p>
+              <div className="flex flex-col space-y-4 md:flex-row md:space-y-0 md:space-x-4">
+                {/* Search Bar */}
+                <div className="flex-1">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                    <Input
+                      placeholder="Search by name or email..."
+                      value={filters.search}
+                      onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
+                      className="pl-9"
+                    />
+                  </div>
+                </div>
+
+                {/* Date Sort */}
+                <Select
+                  value={filters.dateSort}
+                  onValueChange={(value: "newest" | "oldest") => 
+                    setFilters(prev => ({ ...prev, dateSort: value }))
+                  }
+                >
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Sort by date" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="newest">Newest First</SelectItem>
+                    <SelectItem value="oldest">Oldest First</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                {/* Time Slot Filter */}
+                <Select
+                  value={filters.timeSlot}
+                  onValueChange={(value) => 
+                    setFilters(prev => ({ ...prev, timeSlot: value }))
+                  }
+                >
+                  <SelectTrigger className="w-[200px]">
+                    <SelectValue placeholder="Filter by time slot" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Time Slots</SelectItem>
+                    {uniqueTimeSlots.map((slot) => (
+                      <SelectItem key={slot} value={slot}>
+                        {slot}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                {/* Show/Hide Approved Toggle */}
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="show-approved"
+                    checked={filters.showApproved}
+                    onCheckedChange={(checked) => 
+                      setFilters(prev => ({ ...prev, showApproved: checked }))
+                    }
+                  />
+                  <Label htmlFor="show-approved">Show Approved</Label>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {filteredRegistrations.length === 0 ? (
+          <Card>
+            <CardContent className="p-6">
+              <p>No registrations found matching your filters.</p>
             </CardContent>
           </Card>
         ) : (
-          <>
-            <div className="space-y-4">
-              {currentItems.map((registration) => (
-                <Card
-                  key={registration._id}
-                  className="shadow-lg hover:shadow-xl transition duration-300 ease-in-out"
-                >
-                  <CardContent className="p-6">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-6">
-                      <div>
-                        <p className="text-sm text-gray-500">Name</p>
-                        <p className="font-medium">{registration.name}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-500">Email</p>
-                        <p className="font-medium">{registration.email}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-500">Time Slot</p>
-                        <p className="font-medium">
-                          {registration.selectedTimeSlot.from} -{" "}
-                          {registration.selectedTimeSlot.to}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-500">Registered On</p>
-                        <p className="font-medium">
-                          {format(
-                            new Date(registration.registeredAt),
-                            "MMM d, yyyy"
-                          )}
-                        </p>
-                      </div>
-                      <div className="flex items-center">
-                        {!registration.approved ? (
-                          <Button
-                            onClick={() => handleApprove(registration._id)}
-                            className="w-full bg-green-500 hover:bg-green-600 text-white"
-                            disabled={loadingButtons[registration._id]}
-                          >
-                            {loadingButtons[registration._id]
-                              ? "Approving..."
-                              : "Approve"}
-                          </Button>
-                        ) : (
-                          <span className="text-green-500 font-medium">
-                            Approved ✓
-                          </span>
-                        )}
-                      </div>
+          <div className="space-y-4">
+            {filteredRegistrations.map((registration) => (
+              <Card
+                key={registration._id}
+                className="shadow-lg hover:shadow-xl transition duration-300 ease-in-out"
+              >
+                <CardContent className="p-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-6">
+                    <div>
+                      <p className="text-sm text-gray-500">Name</p>
+                      <p className="font-medium">{registration.name}</p>
                     </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-
-            {/* Pagination Controls */}
-            <div className="mt-6 flex justify-center gap-2">
-              <Button
-                variant="outline"
-                onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1}
-              >
-                <ChevronLeftIcon className="h-4 w-4" />
-              </Button>
-
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                (page) => (
-                  <Button
-                    key={page}
-                    variant={currentPage === page ? "default" : "outline"}
-                    onClick={() => handlePageChange(page)}
-                  >
-                    {page}
-                  </Button>
-                )
-              )}
-
-              <Button
-                variant="outline"
-                onClick={() => handlePageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
-              >
-                <ChevronRightIcon className="h-4 w-4" />
-              </Button>
-            </div>
-          </>
+                    <div>
+                      <p className="text-sm text-gray-500">Email</p>
+                      <p className="font-medium">{registration.email}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">Time Slot</p>
+                      <p className="font-medium">
+                        {registration.selectedTimeSlot.from} -{" "}
+                        {registration.selectedTimeSlot.to}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">Registered On</p>
+                      <p className="font-medium">
+                        {format(new Date(registration.registeredAt), "MMM d, yyyy")}
+                      </p>
+                    </div>
+                    <div className="flex items-center">
+                      {!registration.approved ? (
+                        <Button
+                          onClick={() => handleApprove(registration._id)}
+                          className="w-full bg-green-500 hover:bg-green-600 text-white"
+                          disabled={loadingButtons[registration._id]}
+                        >
+                          {loadingButtons[registration._id] ? "Approving..." : "Approve"}
+                        </Button>
+                      ) : (
+                        <span className="text-green-500 font-medium">
+                          Approved ✓
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         )}
       </div>
     </div>

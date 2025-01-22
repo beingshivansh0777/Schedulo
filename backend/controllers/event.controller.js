@@ -4,7 +4,6 @@ const EventModel = require('../models/event.model');
 const RegistrationModel = require('../models/registration.model');
 const dotenv = require('dotenv');
 const jwt = require('jsonwebtoken');
-const redis = require('../db/redis');
 
 dotenv.config();
 
@@ -35,7 +34,6 @@ module.exports.createEvent = async (req, res, next) => {
 
 module.exports.getEventById = async (req, res, next) => {
     const { eventId } = req.params;
-
     try {
         const event = await EventModel.findOne({
             _id: eventId,
@@ -61,22 +59,9 @@ module.exports.getAllEvents = async (req, res, next) => {
         return res.status(401).json({ message: 'Unauthorized' });
     }
     try {
-        let userId = req.user.id;
-        if (!req.user.id) {
-            const decoded = jwt.verify(token, JWT_SECRET);
-            userId = decoded._id;
-        }
-
-        const cachedEvents = await redis.get(`events:${userId}`);
-        if (cachedEvents) {
-            // console.log('using redis cache in event controller')
-            return res.status(200).json({ events: JSON.parse(cachedEvents) }); // This will help to get the data from the cache
-        }
-
-        const events = await EventModel.find({ createdBy: userId });
-        await redis.set(`events:${userId}`, JSON.stringify(events), 'EX', 60 * 10); // Set the data for events for the first time
-        return res.status(200).json({ events });
-
+        const decoded = jwt.verify(token, JWT_SECRET);
+        const events = await EventModel.find({ createdBy: req.user.id });
+        res.status(200).json({ events });
     } catch (error) {
         return res.status(500).json({
             error: error.message
@@ -160,22 +145,13 @@ module.exports.getRegistrationCount = async (req, res, next) => {
     const { slug } = req.params;
 
     try {
-
-        const cachedCount = await redis.get(`registrationCount:${slug}`);
-        if (cachedCount) {
-            // console.log('using redis cache in event controller for registration count')
-            return res.status(200).json({ count: cachedCount });
-        }
-
         const event = await EventModel.findOne({ slug });
 
         if (!event) {
             return res.status(404).json({ message: "Event not found" });
         }
 
-
         const registrationCount = await RegistrationModel.countDocuments({ eventId: event._id, approved: true });
-        await redis.set(`registrationCount:${slug}`, registrationCount, 'EX', 60 * 5); // Set the registration count in redis cache
         res.status(200).json({ count: registrationCount });
     } catch (error) {
         console.error(error);
@@ -187,23 +163,13 @@ module.exports.getRegistrationLimit = async (req, res, next) => {
     const { slug } = req.params;
 
     try {
-        const cachedLimit = await redis.get(`registrationLimit:${slug}`);
-
-        if (cachedLimit) {
-            // console.log('using redis cache in event controller for registration limit')
-            return res.status(200).json({ registrationLimit: cachedLimit });
-        }
-
         const event = await EventModel.findOne({ slug });
 
         if (!event) {
             return res.status(404).json({ message: "Event not found" });
         }
 
-        let foundLimit = event.registrationLimit;
-
-        await redis.set(`registrationLimit:${slug}`, foundLimit, 'EX', 60 * 30); // Set the registration limit in redis cache
-        res.status(200).json({ registrationLimit: foundLimit });
+        res.status(200).json({ registrationLimit: event.registrationLimit });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Internal Server Error" });

@@ -3,6 +3,7 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const { json, urlencoded } = require('body-parser');
 const connectToDb = require('./db/db');
+const redis = require('./db/redis');
 const userRoutes = require('./routes/user.routes');
 const eventRoutes = require('./routes/events.routes');
 const registrationRoutes = require('./routes/registration.routes');
@@ -12,6 +13,7 @@ const app = express();
 
 connectToDb();
 dotenv.config();
+
 
 app.use(cors());
 app.use(json());

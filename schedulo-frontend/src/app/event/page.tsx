@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import ReactMarkdown from "react-markdown";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,19 +21,28 @@ import {
   Plus,
   ArrowLeft,
   Trash2,
+  Eye,
+  Edit,
+  Image as ImageIcon,
+  Shuffle,
 } from "lucide-react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+
+// Background images array
+const BACKGROUND_IMAGES = ["bg1", "bg2", "bg3", "bg4", "bg5", "bg6", "bg7"];
 
 export default function CreateEventPage() {
   const router = useRouter();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [isMarkdownPreview, setIsMarkdownPreview] = useState(false);
   const [mode, setMode] = useState("offline");
   const [link, setLink] = useState("");
   const [eventDate, setEventDate] = useState<Date | undefined>(undefined);
   const [optionalSlots, setOptionalSlots] = useState(0);
   const [isOptionalSlotsEnabled, setIsOptionalSlotsEnabled] = useState(false);
+  const [backgroundImage, setBackgroundImage] = useState("bg1");
   const [timeSlots, setTimeSlots] = useState([
     {
       hour: "",
@@ -49,6 +59,12 @@ export default function CreateEventPage() {
   // const showToastSuccess = (message: string) => {
   //   toast.success(message);
   // };
+
+  const handleRandomBackgroundImage = () => {
+    const currentIndex = BACKGROUND_IMAGES.indexOf(backgroundImage);
+    const nextIndex = (currentIndex + 1) % BACKGROUND_IMAGES.length;
+    setBackgroundImage(BACKGROUND_IMAGES[nextIndex]);
+  };
 
   const showToastError = (message: string) => {
     toast.error(message);
@@ -111,6 +127,7 @@ export default function CreateEventPage() {
             eventDate,
             registrationLimit: optionalSlots,
             timeSlots: formatTimeSlots(),
+            backgroundImage,
           }),
         }
       );
@@ -163,6 +180,29 @@ export default function CreateEventPage() {
             </div>
 
             <CardContent className="p-6 space-y-8">
+              {/* Background Image Selection */}
+              <div className="max-w-3xl mx-auto px-4 py-4 relative">
+                <div className="relative">
+                  <div
+                    className="h-48 w-full bg-cover bg-center rounded-lg"
+                    style={{
+                      backgroundImage: `url(/images/${backgroundImage}.png)`,
+                    }}
+                  >
+                    {/* Random Image Change Button */}
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={handleRandomBackgroundImage}
+                      className="absolute top-2 right-2 bg-white/70 hover:bg-white/90 
+                           rounded-full border border-gray-200 shadow-sm"
+                    >
+                      <Shuffle className="h-5 w-5 text-gray-600" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
               {/* Basic Details Section */}
               <div className="space-y-6">
                 <div>
@@ -179,16 +219,52 @@ export default function CreateEventPage() {
                 </div>
 
                 <div>
-                  <Label htmlFor="description" className="text-sm font-medium">
-                    Description
-                  </Label>
-                  <Textarea
-                    id="description"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    placeholder="Provide details about your event"
-                    className="mt-1 min-h-[120px]"
-                  />
+                  <div className="flex justify-between items-center mb-2">
+                    <Label
+                      htmlFor="description"
+                      className="text-sm font-medium"
+                    >
+                      Description
+                    </Label>
+                    <div className="flex items-center">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setIsMarkdownPreview(!isMarkdownPreview)}
+                        className="text-gray-600 hover:text-gray-900"
+                      >
+                        {isMarkdownPreview ? (
+                          <>
+                            <Edit className="h-4 w-4 mr-2" /> Edit
+                          </>
+                        ) : (
+                          <>
+                            <Eye className="h-4 w-4 mr-2" /> Preview
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+
+                  {isMarkdownPreview ? (
+                    <div className="border rounded-md p-3 min-h-[120px] bg-gray-50 prose max-w-full">
+                      <ReactMarkdown>
+                        {description || "No description"}
+                      </ReactMarkdown>
+                    </div>
+                  ) : (
+                    <Textarea
+                      id="description"
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      placeholder="Support for Markdown is available. Try formatting your text!"
+                      className="mt-1 min-h-[120px]"
+                    />
+                  )}
+                  <p className="text-xs text-gray-500 mt-1">
+                    Markdown is supported. Use # for headings, ** for bold, *
+                    for italic, etc.
+                  </p>
                 </div>
 
                 {/* Checkbox to enable/disable optional slots */}

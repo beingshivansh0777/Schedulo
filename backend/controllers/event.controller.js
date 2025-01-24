@@ -16,11 +16,11 @@ module.exports.createEvent = async (req, res, next) => {
         // console.log({ error: error.array() })
         return res.status(400).json({ error: error.array() });
     }
-    const { title, description, mode, link = '', eventDate, registrationLimit, timeSlots } = req.body;
+    const { title, description, mode, link = '', eventDate, registrationLimit, timeSlots, backgroundImage } = req.body;
 
     const createdBy = req.user.id;
 
-    const eventDetails = { title, description, mode, link, eventDate, registrationLimit, timeSlots, createdBy }
+    const eventDetails = { title, description, mode, link, eventDate, registrationLimit, timeSlots, createdBy,backgroundImage }
 
     try {
         const newEvent = await eventService.createEvent(eventDetails);

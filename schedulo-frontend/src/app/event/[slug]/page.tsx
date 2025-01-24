@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import ReactMarkdown from "react-markdown";
 import { useParams } from "next/navigation";
 import {
   Card,
@@ -29,6 +30,7 @@ interface Event {
   link?: string;
   eventDate: string;
   timeSlots: TimeSlot[];
+  backgroundImage?: string;
 }
 
 interface RegistrationForm {
@@ -229,16 +231,29 @@ export default function EventPage() {
           <div className="max-w-7xl mx-auto px-4 py-12">
             <div className="grid md:grid-cols-5 gap-8">
               {/* Event Details Section */}
+
               <div className="md:col-span-3">
                 <Card className="h-full">
+                  {/* Background Image Section */}
+                  <div className="relative">
+                    <div
+                      className="h-48 w-full bg-cover bg-center rounded-tr-lg rounded-tl-lg"
+                      style={{
+                        backgroundImage: `url(/images/${
+                          event.backgroundImage || "bg1"
+                        }.png)`,
+                      }}
+                    ></div>
+                  </div>
+
                   <CardHeader className="space-y-4 pb-4">
                     <div className="space-y-2">
                       <CardTitle className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                         {event.title}
                       </CardTitle>
-                      <p className="text-gray-600 text-lg">
-                        {event.description}
-                      </p>
+                      <div className="prose max-w-full text-gray-600 text-sm">
+                        <ReactMarkdown>{event.description}</ReactMarkdown>
+                      </div>
                     </div>
                   </CardHeader>
                   <CardContent>

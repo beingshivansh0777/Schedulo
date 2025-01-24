@@ -3,8 +3,8 @@ const shortid = require('shortid');
 const RegistrationModel = require('../models/registration.model');
 const redis = require('../db/redis');
 
-module.exports.createEvent = async ({ title, description, mode, link = '', eventDate, registrationLimit, timeSlots, createdBy }) => {
-    if (!title || !description || !mode || !eventDate || !registrationLimit || !timeSlots || !createdBy) {
+module.exports.createEvent = async ({ title, description, mode, link = '', eventDate, registrationLimit, timeSlots, createdBy, backgroundImage }) => {
+    if (!title || !description || !mode || !eventDate || !registrationLimit || !timeSlots || !createdBy || !backgroundImage) {
         throw new Error('All fields are required');
     }
     try {
@@ -20,6 +20,7 @@ module.exports.createEvent = async ({ title, description, mode, link = '', event
             timeSlots,
             slug: slug,
             createdBy,
+            backgroundImage
         });
 
         await newEvent.save();

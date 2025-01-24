@@ -28,6 +28,7 @@ router.post('/', authMiddleware.authUser, [
         });
         return true;
     }).withMessage('Time slots are required and must be valid'),
+    body('backgroundImage').not().isEmpty().trim().escape(),
 ], (req, res) => {
     eventController.createEvent(req, res);
 });

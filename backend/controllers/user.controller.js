@@ -3,6 +3,8 @@ const userService = require('../services/user.service');
 const { validationResult } = require('express-validator');
 const BlacklistTokenModel = require('../models/blacklistToken.model');
 const redis = require('../db/redis');
+const jwt = require('jsonwebtoken');
+
 
 
 module.exports.userSignup = async (req, res, next) => {
@@ -65,7 +67,6 @@ module.exports.userLogin = async (req, res, next) => {
 }
 
 module.exports.userLogout = async (req, res, next) => {
-    const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
     try {
         const blackToken = new BlacklistTokenModel({ token: token });
         blackToken.save();

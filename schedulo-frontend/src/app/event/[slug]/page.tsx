@@ -140,46 +140,48 @@ export default function EventPage() {
     );
   }
 
-  if (maxCount !== 0 && count >= maxCount) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div
-          className="absolute inset-0 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50"
-          style={{
-            backgroundImage: `
-              linear-gradient(to bottom right, rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.1)),
-              linear-gradient(rgba(99, 102, 241, 0.05) 2px, transparent 2px),
-              linear-gradient(90deg, rgba(99, 102, 241, 0.05) 2px, transparent 2px)
-            `,
-            backgroundSize: "100% 100%, 20px 20px, 20px 20px",
-          }}
-        />
-        <div className="z-10 min-h-screen w-full bg-gradient-to-br flex justify-center items-center">
-          <div className="bg-white p-8 rounded-lg shadow-lg text-center space-y-4">
-            <div className="flex justify-center">
-              <TicketX className="h-16 w-16 text-red-500" />
+  if (maxCount > 0) {
+    if (count >= maxCount) {
+      return (
+        <div className="flex justify-center items-center min-h-screen">
+          <div
+            className="absolute inset-0 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50"
+            style={{
+              backgroundImage: `
+                linear-gradient(to bottom right, rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.1)),
+                linear-gradient(rgba(99, 102, 241, 0.05) 2px, transparent 2px),
+                linear-gradient(90deg, rgba(99, 102, 241, 0.05) 2px, transparent 2px)
+              `,
+              backgroundSize: "100% 100%, 20px 20px, 20px 20px",
+            }}
+          />
+          <div className="z-10 min-h-screen w-full bg-gradient-to-br flex justify-center items-center">
+            <div className="bg-white p-8 rounded-lg shadow-lg text-center space-y-4">
+              <div className="flex justify-center">
+                <TicketX className="h-16 w-16 text-red-500" />
+              </div>
+              <h1 className="text-2xl font-bold text-red-600">
+                Oops, the registration for this event is full
+              </h1>
+              <p className="text-gray-700">
+                Try contacting the administrator for assistance
+              </p>
+              <p className="w-full">
+                Created with{" "}
+                <a
+                  href="https://schedulo-eight.vercel.app"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:underline"
+                >
+                  Schedulo
+                </a>
+              </p>
             </div>
-            <h1 className="text-2xl font-bold text-red-600">
-              Oops, the registration for this event is full
-            </h1>
-            <p className="text-gray-700">
-              Try contacting the administrator for assistance
-            </p>
-            <p className="w-full">
-              Created with{" "}
-              <a
-                href="https://schedulo-eight.vercel.app"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 hover:underline"
-              >
-                Schedulo
-              </a>
-            </p>
           </div>
         </div>
-      </div>
-    );
+      );
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -272,7 +274,7 @@ export default function EventPage() {
                           <div>
                             <p className="text-sm text-gray-500">Capacity</p>
                             <p className="font-medium">
-                              {maxCount === 0
+                              {maxCount == 0
                                 ? "Available"
                                 : `${count} / ${maxCount}`}
                             </p>

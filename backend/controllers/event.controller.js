@@ -20,7 +20,7 @@ module.exports.createEvent = async (req, res, next) => {
 
     const createdBy = req.user.id;
 
-    const eventDetails = { title, description, mode, link, eventDate, registrationLimit, timeSlots, createdBy,backgroundImage }
+    const eventDetails = { title, description, mode, link, eventDate, registrationLimit, timeSlots, createdBy, backgroundImage }
 
     try {
         const newEvent = await eventService.createEvent(eventDetails);
@@ -61,18 +61,19 @@ module.exports.getAllEvents = async (req, res, next) => {
         return res.status(401).json({ message: 'Unauthorized' });
     }
     try {
-        let userId = req.user.id;
-        if (!req.user.id) {
-            const decoded = jwt.verify(token, JWT_SECRET);
-            userId = decoded._id;
-        }
+        // let userId = req.user.id;
+        // if (!req.user.id) {
+        const decoded = jwt.verify(token, JWT_SECRET);
+        userId = decoded._id;
+        // }
 
         const cachedEvents = await redis.get(`events:${userId}`);
         if (cachedEvents) {
             // console.log('using redis cache in event controller')
+            // console.log('Getting cached user events')
             return res.status(200).json({ events: JSON.parse(cachedEvents) }); // This will help to get the data from the cache
         }
-
+        console.log("next")
         const events = await EventModel.find({ createdBy: userId });
         await redis.set(`events:${userId}`, JSON.stringify(events), 'EX', 60 * 10); // Set the data for events for the first time
         return res.status(200).json({ events });
@@ -82,6 +83,59 @@ module.exports.getAllEvents = async (req, res, next) => {
             error: error.message
         });
     }
+}
+
+function paginateArray(arr, pageNumber) {
+    const itemsPerPage = 6;
+    const startIndex = (pageNumber - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    console.log(pageNumber)
+    return arr.slice(startIndex, endIndex);
+}
+
+
+
+
+module.exports.getPageEvents = async (req, res, next) => {
+    const token = req.cookies.authToken || req.headers.authorization?.split(' ')[1];
+    const page = parseInt(req.headers.page);
+    if (!token) {
+        return res.status(401).json({ message: 'Unauthorized' });
+    }
+    try {
+        let userId = req.user.id;
+        if (!req.user.id) {
+            const decoded = jwt.verify(token, JWT_SECRET);
+            userId = decoded._id;
+        }
+
+        const cachedEvents = await redis.get(`events:${userId}`);
+        if (cachedEvents) {
+            // console.log('using redis cache in event controller')
+            // console.log('Getting cached user events')
+            const events = JSON.parse(cachedEvents);
+            return res.status(200).json({ events: { events: paginateArray(events, page), total: events.length } }); // This will help to get the data from the cache
+        }
+        console.log("next")
+        const events = await EventModel.find({ createdBy: userId });
+        await redis.set(`events:${userId}`, JSON.stringify(events), 'EX', 60 * 10); // Set the data for events for the first time
+        return res.status(200).json({ events: { events: paginateArray(events, page), total: events.length } });
+
+    } catch (error) {
+        return res.status(500).json({
+            error: error.message
+        });
+    }
+}
+
+
+module.exports.clearEvents = async (req, res, next) => {
+    const count = await EventModel.countDocuments({ title: "Sample 1" });
+    console.log(`Found ${count} events with title "Sample 1"`);
+
+    // Then delete
+    const result = await EventModel.deleteMany({ title: "Sample 1" });
+    console.log(`Deleted ${result.deletedCount} events`);
 }
 
 

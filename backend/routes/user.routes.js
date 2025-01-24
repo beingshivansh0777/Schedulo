@@ -24,8 +24,8 @@ router.get('/logout', authMiddleware.authUser, async (req, res) => {
 });
 
 
-router.get('/', (req, res) => {
-    res.send('Hello from user routes');
+router.get('/checkLogin', authMiddleware.authUser, (req, res) => {
+    res.status(200).json({ user: req.user });
 });
 
 module.exports = router;

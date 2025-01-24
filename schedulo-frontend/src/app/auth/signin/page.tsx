@@ -12,15 +12,34 @@ export default function SignIn() {
   const router = useRouter();
 
   useEffect(() => {
+    setIsLoading(true);
     const storedToken = localStorage.getItem("authToken");
-    setToken(storedToken);
+    fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/checkLogin`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${storedToken}`,
+      },
+    })
+      .then((response) => {
+        if (response.ok) {
+          fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/events`, {
+            headers: {
+              Authorization: `Bearer ${storedToken}`,
+            },
+          });
+          return router.push("/home");
+        }
+        localStorage.removeItem("authToken");
+      })
+      .catch(() => {
+        // console.error("Error checking login status:", error);
+        localStorage.removeItem("authToken");
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   }, []);
-
-  useEffect(() => {
-    if (token) {
-      router.push("/home");
-    }
-  }, [router, token]);
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -30,7 +49,6 @@ export default function SignIn() {
       const formData = new FormData(e.currentTarget);
       const email = formData.get("email");
       const password = formData.get("password");
-
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/login`,
         {

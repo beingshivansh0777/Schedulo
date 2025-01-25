@@ -1,7 +1,7 @@
 const userModel = require('../models/user.model');
 const userService = require('../services/user.service');
 const { validationResult } = require('express-validator');
-const BlacklistTokenModel = require('../models/blacklistToken.model');
+// const BlacklistTokenModel = require('../models/blacklistToken.model');
 const redis = require('../db/redis');
 const jwt = require('jsonwebtoken');
 
@@ -68,7 +68,8 @@ module.exports.userLogin = async (req, res, next) => {
 
 module.exports.userLogout = async (req, res, next) => {
     try {
-        const blackToken = new BlacklistTokenModel({ token: token });
+        // const blackToken = new BlacklistTokenModel({ token: token });
+        await redis.set(`blacklist:${token}`, 'true', 'EX', 60 * 60 * 24); // This will help to store data for 7 days
         blackToken.save();
         res.clearCookie('authToken');
         return res.status(200).json({ message: 'Logout successful' });

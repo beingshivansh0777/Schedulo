@@ -34,5 +34,7 @@ var registrationSchema = new mongoose.Schema({
     }
 });
 
+registrationSchema.index({ eventId: 1 });
+
 const RegistrationModel = mongoose.model("Registration", registrationSchema);
 module.exports = RegistrationModel;

@@ -37,7 +37,7 @@ router.get('/id/:eventId', authMiddleware.authUser, (req, res) => {
     eventController.getEventById(req, res);
 });
 
-router.get('/', authMiddleware.authUser, (req, res) => {
+router.get('/', (req, res) => {
     eventController.getAllEvents(req, res);
 });
 

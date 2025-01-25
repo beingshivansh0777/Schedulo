@@ -114,7 +114,7 @@ export default function HomePage() {
     };
 
     fetchEvents();
-  }, [router]);
+  }, []);
 
   // Add pagination helper functions
   const indexOfLastItem = currentPage * itemsPerPage;

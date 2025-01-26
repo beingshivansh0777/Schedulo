@@ -1,16 +1,21 @@
 ## Pull Request Description
 
-### Related Issue
-Fixes # (issue number)
+### Related Issues
+Fixes #(issue number)  
+References #(other related issues or PRs)
 
-Proposed Changes
+### Summary of Proposed Changes
+- **Change 1**: Brief explanation of the change.
+- **Change 2**: Brief explanation of the change.
+- **Change 3**: Brief explanation of the change.
 
-- Change 1
-- Change 2
-- Change 3
+### Screenshots/Media (if applicable)
+Add screenshots, videos, or add a media showcasing the changes with https://loom.com
 
-### Additional Info
-Any additional information or context
+### Additional Information
+Provide any extra context or details that may be useful for reviewers.
+
+---
 
 ## Checklist
 

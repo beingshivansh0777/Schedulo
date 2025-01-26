@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="https://github.com/user-attachments/assets/3d4e2744-e905-4eae-b179-cdab8dfb24ee" align="center">
+    <img src="https://github.com/user-attachments/assets/4fc00e69-441f-40f4-98b1-41369ebb13a6" align="center">
 </p>
 <p align="center"><h1 align="center">SCHEDULO</h1></p>
 <p align="center">
@@ -10,16 +10,13 @@
 	<img src="https://img.shields.io/github/last-commit/mukundsolanki/Schedulo?style=default&logo=git&logoColor=white&color=0080ff" alt="last-commit">
 	<img src="https://img.shields.io/github/languages/top/mukundsolanki/Schedulo?style=default&color=0080ff" alt="repo-top-language">
 </p>
-<p align="center"><!-- default option, no dependency badges. -->
-</p>
-<p align="center">
-	<!-- default option, no dependency badges. -->
-</p>
 <br>
 
 ## 🔗 Table of Contents
 
 - [📍 Overview](#-overview)
+- [📋 Features](#-features)
+- [🛠 Tech Stack](#-tech-stack)
 - [📁 Project Structure](#-project-structure)
 - [🚀 Getting Started](#-getting-started)
   - [☑️ Prerequisites](#-prerequisites)
@@ -31,9 +28,42 @@
 
 ## 📍 Overview
 
-A modern, intuitive event scheduling platform that streamlines the scheduling process and saves time by offering streamlined user signup, event creation, and registration processes. With sleek interfaces and dynamic functionalities, Schedulo ensures smooth user interactions. Perfect for organizations and businesses seeking efficient event scheduling solutions.
+Schedulo is a modern event scheduling platform designed to streamline the creation and management of events, interviews, and meetings. With Schedulo, users can:
 
-## Live at: [LINK](https://schedulo-eight.vercel.app/)
+- Create events (online or offline) with ease.
+- Generate and share unique registration links for participants.
+- Allow participants to register and select time slots based on their preferences.
+- Approve or reject registrations and send confirmation emails automatically.
+- Access insightful analytics, including participant statistics and event summaries, via an intuitive dashboard.
+
+Whether you're organizing a corporate meeting, a community event, or personal interviews, Schedulo provides an efficient, user-friendly solution for all scheduling needs.
+
+## 📋 Features
+
+- **User-Friendly Interface**: Simplified and sleek UI for seamless event creation and management.
+- **Customizable Events**: Configure events for multiple time slots and preferences.
+- **Automated Emails**: Send confirmation emails to approved participants.
+- **Real-Time Insights**: Access dashboards to track registrations, approvals, and participant counts.
+- **Open Source**: Fully customizable and open to contributions from the community.
+
+## 🛠 Tech Stack
+
+Schedulo leverages modern web technologies to deliver a robust and scalable solution:
+
+- **Frontend**:
+  <img src="https://img.shields.io/badge/Next.js-000000.svg?style=flat&logo=nextdotjs&logoColor=white" alt="Next.js">
+  <img src="https://img.shields.io/badge/TypeScript-3178C6.svg?style=flat&logo=typescript&logoColor=white" alt="TypeScript">
+  <img src="https://img.shields.io/badge/TailwindCSS-06B6D4.svg?style=flat&logo=tailwindcss&logoColor=white" alt="Tailwind CSS">
+  <img src="https://img.shields.io/badge/shadcn%2Fui-000?logo=shadcnui&logoColor=fff&style=flat" alt="Shadcn.ui">
+
+- **Backend**:
+  <img src="https://img.shields.io/badge/Node.js-339933.svg?style=flat&logo=nodedotjs&logoColor=white" alt="Node.js">
+  <img src="https://img.shields.io/badge/Express.js-000000.svg?style=flat&logo=express&logoColor=white" alt="Express.js">
+  <img src="https://img.shields.io/badge/Redis-DC382D.svg?style=flat&logo=redis&logoColor=white" alt="Redis">
+  <img src="https://img.shields.io/badge/MongoDB-47A248.svg?style=flat&logo=mongodb&logoColor=white" alt="MongoDB">
+
+- **Email Service**:
+  <img src="https://img.shields.io/badge/EmailJS-F4B400.svg?style=flat&logo=google&logoColor=white" alt="EmailJS">
 
 ---
 
@@ -41,39 +71,42 @@ A modern, intuitive event scheduling platform that streamlines the scheduling pr
 
 ```sh
 └── Schedulo/
-    ├── README
+    ├── .github
+    │   ├── ISSUE_TEMPLATE
+    │   └── pull_request_template.md
+    ├── CONTRIBUTING.md
     ├── LICENSE
+    ├── README.md
     ├── backend
+    │   ├── .gcloudignore
     │   ├── .gitignore
+    │   ├── app.js
+    │   ├── app.yaml
+    │   ├── controllers
+    │   ├── db
+    │   ├── middlewares
+    │   ├── models
     │   ├── package-lock.json
     │   ├── package.json
-    │   └── src
-    │       ├── index.js
-    │       └── models
+    │   ├── routes
+    │   ├── server.js
+    │   └── services
+    ├── offline_template.html
+    ├── online_template.html
     └── schedulo-frontend
         ├── .gitignore
         ├── README.md
         ├── components.json
-        ├── eslint.config.mjs
         ├── next.config.ts
         ├── package-lock.json
         ├── package.json
         ├── postcss.config.js
         ├── postcss.config.mjs
         ├── public
-        │   ├── file.svg
-        │   ├── globe.svg
-        │   ├── next.svg
-        │   ├── vercel.svg
-        │   └── window.svg
         ├── src
-        │   ├── app
-        │   ├── components
-        │   └── lib
         ├── tailwind.config.ts
         └── tsconfig.json
 ```
-
 
 ---
 ## 🚀 Getting Started
@@ -99,6 +132,7 @@ Before getting started with Schedulo, ensure your runtime environment meets the 
         JWT_SECRET=your_jwt_secret
     ```
 
+---
 
 ### ⚙️ Installation
 
@@ -129,7 +163,7 @@ Install Schedulo locally using one of the following methods:
 ❯ cd schedulo-frontend && npm start
 ❯ cd backend && npm start
 ```
-
+---
 
 ## 🔰 Contributing
 
@@ -139,20 +173,16 @@ Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for de
 - **🐛 [Report Issues](https://github.com/mukundsolanki/Schedulo/issues)**: Submit bugs found or log feature requests for the `Schedulo` project.
 - **💡 [Submit Pull Requests](https://github.com/mukundsolanki/Schedulo/CONTRIBUTING.md)**: Review open PRs, and submit your own PRs.
 
-<details closed>
-<summary>Contributor Graph</summary>
+## Contributors: 
 <br>
 <p align="left">
    <a href="https://github.com{/mukundsolanki/Schedulo/}graphs/contributors">
       <img src="https://contrib.rocks/image?repo=mukundsolanki/Schedulo">
    </a>
 </p>
-</details>
 
 ---
 
 ### 🎗 License
 
 This project is protected under the [MIT LICENSE](https://choosealicense.com/licenses) License. For more details, refer to the [LICENSE](https://choosealicense.com/licenses/) file.
-
----

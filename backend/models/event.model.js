@@ -51,7 +51,8 @@ const eventSchema = new mongoose.Schema({
 
 // Add indexes for commonly queried fields
 eventSchema.index({ userId: 1 });
-eventSchema.index({ slug: 1 });
+// Remove duplicate slug index
+// eventSchema.index({ slug: 1 });
 eventSchema.index({ createdBy: 1 });
 
 const EventModel = mongoose.model("Event", eventSchema);

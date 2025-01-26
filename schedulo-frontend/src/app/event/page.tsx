@@ -371,118 +371,119 @@ export default function CreateEventPage() {
                 </div>
 
                 <div className="space-y-4">
-                  {timeSlots.map((slot, index) => (
-                    <div
-                      key={index}
-                      className="flex gap-4 items-center bg-gray-50 p-4 rounded-lg relative group"
-                    >
-                      <Clock className="text-gray-400 h-4 w-4 flex-shrink-0" />
+  {timeSlots.map((slot, index) => (
+    <div
+      key={index}
+      className="flex flex-col md:flex-row gap-4 items-start md:items-center bg-gray-50 p-4 rounded-lg relative group"
+    >
+      <Clock className="text-gray-400 h-4 w-4 flex-shrink-0" />
 
-                      {/* From Time */}
-                      <div className="flex gap-2 items-center flex-1">
-                        <div className="space-y-1 flex-1">
-                          <Label className="text-xs text-gray-500">From</Label>
-                          <div className="flex gap-2">
-                            <Input
-                              type="number"
-                              min="1"
-                              max="12"
-                              placeholder="HH"
-                              value={slot.hour}
-                              onChange={(e) => {
-                                const newSlots = [...timeSlots];
-                                newSlots[index].hour = e.target.value;
-                                setTimeSlots(newSlots);
-                              }}
-                              className="w-20"
-                            />
-                            <Input
-                              type="number"
-                              min="0"
-                              max="59"
-                              placeholder="MM"
-                              value={slot.minute}
-                              onChange={(e) => {
-                                const newSlots = [...timeSlots];
-                                newSlots[index].minute = e.target.value;
-                                setTimeSlots(newSlots);
-                              }}
-                              className="w-20"
-                            />
-                            <select
-                              value={slot.period}
-                              onChange={(e) => {
-                                const newSlots = [...timeSlots];
-                                newSlots[index].period = e.target.value;
-                                setTimeSlots(newSlots);
-                              }}
-                              className="w-20 rounded-md border border-input bg-background px-3 py-2 text-sm"
-                            >
-                              <option value="AM">AM</option>
-                              <option value="PM">PM</option>
-                            </select>
-                          </div>
-                        </div>
+      {/* Time Slots */}
+      <div className="flex flex-col md:flex-row gap-4 flex-1">
+        {/* From Time */}
+        <div className="flex flex-col md:flex-row gap-2 items-start md:items-center flex-1">
+          <Label className="text-xs text-gray-500">From</Label>
+          <div className="flex flex-row gap-2">
+            <Input
+              type="number"
+              min="1"
+              max="12"
+              placeholder="HH"
+              value={slot.hour}
+              onChange={(e) => {
+                const newSlots = [...timeSlots];
+                newSlots[index].hour = e.target.value;
+                setTimeSlots(newSlots);
+              }}
+              className="w-full sm:w-20"
+            />
+            <Input
+              type="number"
+              min="0"
+              max="59"
+              placeholder="MM"
+              value={slot.minute}
+              onChange={(e) => {
+                const newSlots = [...timeSlots];
+                newSlots[index].minute = e.target.value;
+                setTimeSlots(newSlots);
+              }}
+              className="w-full sm:w-20"
+            />
+            <select
+              value={slot.period}
+              onChange={(e) => {
+                const newSlots = [...timeSlots];
+                newSlots[index].period = e.target.value;
+                setTimeSlots(newSlots);
+              }}
+              className="w-full sm:w-20 rounded-md border border-input bg-background px-3 py-2 text-sm"
+            >
+              <option value="AM">AM</option>
+              <option value="PM">PM</option>
+            </select>
+          </div>
+        </div>
 
-                        {/* To Time */}
-                        <div className="space-y-1 flex-1">
-                          <Label className="text-xs text-gray-500">To</Label>
-                          <div className="flex gap-2">
-                            <Input
-                              type="number"
-                              min="1"
-                              max="12"
-                              placeholder="HH"
-                              value={slot.toHour}
-                              onChange={(e) => {
-                                const newSlots = [...timeSlots];
-                                newSlots[index].toHour = e.target.value;
-                                setTimeSlots(newSlots);
-                              }}
-                              className="w-20"
-                            />
-                            <Input
-                              type="number"
-                              min="0"
-                              max="59"
-                              placeholder="MM"
-                              value={slot.toMinute}
-                              onChange={(e) => {
-                                const newSlots = [...timeSlots];
-                                newSlots[index].toMinute = e.target.value;
-                                setTimeSlots(newSlots);
-                              }}
-                              className="w-20"
-                            />
-                            <select
-                              value={slot.toPeriod}
-                              onChange={(e) => {
-                                const newSlots = [...timeSlots];
-                                newSlots[index].toPeriod = e.target.value;
-                                setTimeSlots(newSlots);
-                              }}
-                              className="w-20 rounded-md border border-input bg-background px-3 py-2 text-sm"
-                            >
-                              <option value="AM">AM</option>
-                              <option value="PM">PM</option>
-                            </select>
-                          </div>
-                        </div>
-                      </div>
+        {/* To Time */}
+        <div className="flex flex-col md:flex-row gap-2 items-start md:items-center flex-1">
+          <Label className="text-xs text-gray-500">To</Label>
+          <div className="flex flex-row gap-2">
+            <Input
+              type="number"
+              min="1"
+              max="12"
+              placeholder="HH"
+              value={slot.toHour}
+              onChange={(e) => {
+                const newSlots = [...timeSlots];
+                newSlots[index].toHour = e.target.value;
+                setTimeSlots(newSlots);
+              }}
+              className="w-full sm:w-20"
+            />
+            <Input
+              type="number"
+              min="0"
+              max="59"
+              placeholder="MM"
+              value={slot.toMinute}
+              onChange={(e) => {
+                const newSlots = [...timeSlots];
+                newSlots[index].toMinute = e.target.value;
+                setTimeSlots(newSlots);
+              }}
+              className="w-full sm:w-20"
+            />
+            <select
+              value={slot.toPeriod}
+              onChange={(e) => {
+                const newSlots = [...timeSlots];
+                newSlots[index].toPeriod = e.target.value;
+                setTimeSlots(newSlots);
+              }}
+              className="w-full sm:w-20 rounded-md border border-input bg-background px-3 py-2 text-sm"
+            >
+              <option value="AM">AM</option>
+              <option value="PM">PM</option>
+            </select>
+          </div>
+        </div>
+      </div>
 
-                      {timeSlots.length > 1 && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleRemoveTimeSlot(index)}
-                          className="text-gray-400 hover:text-red-500"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      )}
-                    </div>
-                  ))}
-                </div>
+      {timeSlots.length > 1 && (
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => handleRemoveTimeSlot(index)}
+          className="text-gray-400 hover:text-red-500 mt-2 md:mt-0"
+        >
+          <Trash2 className="h-4 w-4" />
+        </Button>
+      )}
+    </div>
+  ))}
+</div>
               </div>
 
               {/* Submit Button */}

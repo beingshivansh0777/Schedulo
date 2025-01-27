@@ -1,74 +1,247 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Registration Confirmation</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
             line-height: 1.6;
-            color: #333333;
+            color: #1a1a1a;
+            background: linear-gradient(135deg, #0EA5E9 0%, #6366F1 50%, #A855F7 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
+
         .email-container {
-            max-width: 600px;
+            width: 100%;
+            max-width: 680px;
             margin: 0 auto;
-            padding: 20px;
-            background-color: #f8f9fa;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 
+                0 25px 50px -12px rgba(0, 0, 0, 0.25),
+                0 0 0 1px rgba(255, 255, 255, 0.1);
         }
+
         .header {
-            background-color: #4F46E5;
-            color: white;
-            padding: 30px 20px;
+            background: linear-gradient(135deg, #0EA5E9, #6366F1);
+            padding: 70px 40px;
             text-align: center;
-            border-radius: 10px 10px 0 0;
+            position: relative;
+            overflow: hidden;
         }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(255,255,255,0.2) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255,255,255,0.15) 0%, transparent 50%);
+            z-index: 1;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='rgba(255,255,255,0.1)' fill-rule='evenodd'/%3E%3C/svg%3E");
+            opacity: 0.5;
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 42px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin: 0;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 2;
+        }
+
         .content {
-            background-color: white;
-            padding: 30px 20px;
-            border-radius: 0 0 10px 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 50px 40px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.98) 100%);
         }
+
         .welcome-text {
-            font-size: 18px;
-            margin-bottom: 25px;
-            color: #333;
+            font-size: 24px;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, #0EA5E9, #6366F1);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+            letter-spacing: -0.3px;
         }
+
         .event-details {
-            background-color: #f8f9fa;
-            padding: 20px;
-            border-radius: 8px;
-            margin: 20px 0;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.03) 0%, rgba(10, 165, 233, 0.03) 100%);
+            border: 1px solid rgba(99, 102, 241, 0.1);
+            padding: 40px;
+            border-radius: 24px;
+            margin: 35px 0;
+            position: relative;
+            overflow: hidden;
         }
+
+        .event-details::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(to right, #0EA5E9, #6366F1);
+        }
+
         .detail-row {
-            margin: 12px 0;
-        }
-        .detail-label {
-            font-weight: bold;
-            color: #4F46E5;
-        }
-        .meeting-link {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 12px 25px;
-            background-color: #4F46E5;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            font-weight: bold;
-        }
-        .footer {
-            margin-top: 30px;
-            text-align: center;
-            color: #666;
-            font-size: 14px;
-        }
-        .divider {
-            height: 1px;
-            background-color: #e0e0e0;
+            display: flex;
+            align-items: center;
             margin: 20px 0;
+            padding: 20px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(99, 102, 241, 0.05);
+        }
+
+        .detail-row:hover {
+            transform: translateY(-2px) scale(1.01);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+            border-color: rgba(99, 102, 241, 0.2);
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #6366F1;
+            min-width: 140px;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .detail-value {
+            color: #1E293B;
+            font-weight: 500;
+            font-size: 16px;
+        }
+
+        .divider {
+            height: 3px;
+            background: linear-gradient(to right, #0EA5E9, #6366F1);
+            margin: 40px 0;
+            border-radius: 3px;
+            opacity: 0.2;
+        }
+
+        .venue-note {
+            text-align: center;
+            font-weight: 700;
+            background: linear-gradient(135deg, #0EA5E9, #6366F1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 22px;
+            margin: 30px 0;
+            padding: 10px;
+            position: relative;
+        }
+
+        .system-note {
+            font-size: 14px;
+            color: #64748B;
+            text-align: center;
+            margin-top: 35px;
+            padding: 24px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.03) 0%, rgba(10, 165, 233, 0.03) 100%);
+            border-radius: 20px;
+            border: 1px solid rgba(99, 102, 241, 0.1);
+        }
+
+        .footer {
+            text-align: center;
+            background: linear-gradient(135deg, #0EA5E9, #6366F1);
+            color: white;
+            padding: 40px;
+            margin-top: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 10% 90%, rgba(255,255,255,0.1) 0%, transparent 40%),
+                radial-gradient(circle at 90% 10%, rgba(255,255,255,0.1) 0%, transparent 40%);
+        }
+
+        .footer p {
+            margin: 8px 0;
+            font-size: 16px;
+            font-weight: 500;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            letter-spacing: 0.3px;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 20px 10px;
+            }
+
+            .content {
+                padding: 30px 20px;
+            }
+
+            .header {
+                padding: 50px 20px;
+            }
+
+            .header h1 {
+                font-size: 32px;
+            }
+
+            .detail-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .detail-label {
+                margin-bottom: 8px;
+            }
+
+            .event-details {
+                padding: 30px 20px;
+            }
+
+            .venue-note {
+                font-size: 20px;
+            }
         }
     </style>
 </head>
@@ -81,40 +254,40 @@
         <div class="content">
             <p class="welcome-text">Dear {{to_name}},</p>
             
-            <p>Your registration for <strong>{{event_name}}</strong> has been confirmed! We're excited to have you join us.</p>
+            <p>We're thrilled to confirm your registration for <strong>{{event_name}}</strong>! Get ready for an extraordinary experience.</p>
             
             <div class="event-details">
                 <div class="detail-row">
-                    <span class="detail-label">Event Name:</span>
-                    <span>{{event_name}}</span>
+                    <span class="detail-label">Event Name</span>
+                    <span class="detail-value">{{event_name}}</span>
                 </div>
                 
                 <div class="detail-row">
-                    <span class="detail-label">Date:</span>
-                    <span>{{event_date}}</span>
+                    <span class="detail-label">Date</span>
+                    <span class="detail-value">{{event_date}}</span>
                 </div>
                 
                 <div class="detail-row">
-                    <span class="detail-label">Time:</span>
-                    <span>{{time_slot}}</span>
+                    <span class="detail-label">Time</span>
+                    <span class="detail-value">{{time_slot}}</span>
                 </div>
                 
                 <div class="detail-row">
-                    <span class="detail-label">Mode:</span>
-                    <span>Offline</span>
+                    <span class="detail-label">Mode</span>
+                    <span class="detail-value">Offline</span>
                 </div>
-                
+
                 <div class="divider"></div>
-                <div style="text-align: center;">
-                    <p style="margin-bottom: 15px;"><strong>We look forward to seeing you at the venue!</strong></p>
-                </div>
+                <p class="venue-note">We can't wait to welcome you at the venue!</p>
             </div>
             
-            <p style="margin-top: 25px;">This is a system generated email, please do not reply to this message.</p>
+            <div class="system-note">
+                This is a system-generated email. Please do not reply to this message.
+            </div>
             
             <div class="footer">
-                <p>Thank you for registering!</p>
-                <p style="margin-top: 10px;">Team Schedulo</p>
+                <p>Thank you for choosing Schedulo!</p>
+                <p>✨ Team Schedulo ✨</p>
             </div>
         </div>
     </div>

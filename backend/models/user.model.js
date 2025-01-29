@@ -19,7 +19,8 @@ const userSchema = new mongoose.Schema({
     },
 });
 
-userSchema.index({ email: 1 });
+// Remove duplicate index declaration
+// userSchema.index({ email: 1 });
 
 userSchema.methods.generateAuthToken = function () {
     const token = jwt.sign({ _id: this._id }, process.env.JWT_SECRET, { expiresIn: '24h' });

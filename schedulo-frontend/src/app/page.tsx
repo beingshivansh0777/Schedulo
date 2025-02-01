@@ -71,6 +71,13 @@ const HomePage = () => {
           {/* Hero Section */}
           <section className="flex items-center justify-center flex-grow px-8">
             <div className="max-w-7xl mx-auto flex flex-col items-center text-center">
+            <div className="mb-4">
+
+<a target="_blank" href="https://peerlist.io/mukundsolanki/project/schedulo-simplifying-event-scheduling-with-ease">
+
+<img src="https://private-user-images.githubusercontent.com/114515612/407613782-4e392f57-7144-4e0b-a4df-cc0fe2e6e737.svg?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3MzgzNDc3MTgsIm5iZiI6MTczODM0NzQxOCwicGF0aCI6Ii8xMTQ1MTU2MTIvNDA3NjEzNzgyLTRlMzkyZjU3LTcxNDQtNGUwYi1hNGRmLWNjMGZlMmU2ZTczNy5zdmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjUwMTMxJTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI1MDEzMVQxODE2NThaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT0yNWRkZGYxZmQ4MWMwYzI0MjNkMGNlYjA3YzkyMTUwZTdjNzM5ZGM4ZWZlN2ZlMDNhN2E3MjFiZGJmZDhiYTM3JlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCJ9.Yk8ncGzxV2GOQ9cQ2vUjju6lyo7j0Jbzv_DNg1ozbNs" alt="" />
+</a>
+</div>
               <h2 className="text-6xl font-bold text-gray-900 mb-6">
                 Create{" "}
                 <span className="text-indigo-600">
@@ -88,13 +95,7 @@ const HomePage = () => {
                 Streamline your scheduling process and save time with our
                 intuitive management platform.
               </p>
-              <div className="mb-4">
-
-              <a target="_blank" href="https://peerlist.io/mukundsolanki/project/schedulo-simplifying-event-scheduling-with-ease">
-
-<img src="https://private-user-images.githubusercontent.com/114515612/407613782-4e392f57-7144-4e0b-a4df-cc0fe2e6e737.svg?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3MzgzNDc3MTgsIm5iZiI6MTczODM0NzQxOCwicGF0aCI6Ii8xMTQ1MTU2MTIvNDA3NjEzNzgyLTRlMzkyZjU3LTcxNDQtNGUwYi1hNGRmLWNjMGZlMmU2ZTczNy5zdmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjUwMTMxJTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI1MDEzMVQxODE2NThaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT0yNWRkZGYxZmQ4MWMwYzI0MjNkMGNlYjA3YzkyMTUwZTdjNzM5ZGM4ZWZlN2ZlMDNhN2E3MjFiZGJmZDhiYTM3JlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCJ9.Yk8ncGzxV2GOQ9cQ2vUjju6lyo7j0Jbzv_DNg1ozbNs" alt="" />
-</a>
-              </div>
+              
               <div className="space-x-4">
                 <Dialog>
                   <DialogTrigger asChild>

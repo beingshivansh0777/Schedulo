@@ -8,6 +8,7 @@ import {
   CardTitle,
   CardContent,
   CardFooter,
+  DeleteButton
 } from "@/components/ui/card";
 import {
   Calendar,
@@ -84,6 +85,34 @@ export default function HomePage() {
     navigator.clipboard.writeText(url);
     setCopiedId(eventId);
     setTimeout(() => setCopiedId(null), 2000);
+  };
+  const handleDeleteEvent = async (eventId: string) => {
+    try {
+      const token = localStorage.getItem("authToken");
+      if (!token) return;
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/events/${eventId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        console.error("Failed to delete event");
+        return;
+      }
+
+      // Remove deleted event from state
+      setEvents((prevEvents) =>
+        prevEvents.filter((event) => event._id !== eventId)
+      );
+    } catch (error) {
+      console.error("Error deleting event:", error);
+    }
   };
 
   useEffect(() => {
@@ -185,7 +214,7 @@ export default function HomePage() {
                 </h1>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {currentEvents.map((event) => (
+              {currentEvents.map((event) => (
                   <Card
                     key={event._id}
                     className="bg-white border border-gray-200 hover:border-indigo-200 hover:shadow-lg transition-all duration-300 cursor-pointer"
@@ -248,6 +277,13 @@ export default function HomePage() {
                         >
                           →
                         </Button>
+                      </div>
+                      {/* Delete Button with Event Handler */}
+                      <div className="w-full h-16 bg-white ">
+                        <DeleteButton
+                          eventId={event._id}
+                          onDelete={handleDeleteEvent}
+                        />
                       </div>
                     </CardFooter>
                   </Card>

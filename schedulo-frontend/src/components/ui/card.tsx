@@ -1,7 +1,8 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
-
+import { Button } from "@/components/ui/button";
+import { Trash2 } from "lucide-react";
 const Card = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
@@ -75,5 +76,63 @@ const CardFooter = React.forwardRef<
   />
 ))
 CardFooter.displayName = "CardFooter"
+const DeleteButton = ({ eventId, onDelete }: { eventId: string; onDelete: (id: string) => void }) => {
+  const [showPopup, setShowPopup] = React.useState(false);
+  const [confirmText, setConfirmText] = React.useState("");
 
-export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent }
+  const handlePopupClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevents event from propagating to parent
+  };
+
+  return (
+    <div className="relative">
+      {/* Delete Icon Button */}
+      <Button
+        variant="destructive"
+        size="icon"
+        className="absolute top-3 right-3"
+        onClick={(e) => {
+          e.stopPropagation(); // Prevents event from propagating to parent
+          setShowPopup(true);
+        }}
+      >
+        <Trash2 className="w-4 h-4" />
+      </Button>
+
+      {/* Confirmation Popup */}
+      {showPopup && (
+        <div
+          className="absolute top-10 right-0 bg-white border rounded-lg shadow-md p-4 w-64 z-50"
+          onClick={handlePopupClick} // Stop click propagation on the popup container
+        >
+          <p className="text-sm text-gray-700">Type "delete" to confirm:</p>
+          <input
+            type="text"
+            value={confirmText}
+            onChange={(e) => setConfirmText(e.target.value)}
+            className="mt-2 w-full border rounded p-2 text-sm"
+            onClick={handlePopupClick} // Stop click propagation on input field
+          />
+          <div className="flex justify-end gap-2 mt-3">
+            <Button variant="outline" size="sm" onClick={() => setShowPopup(false)}>
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              size="sm"
+              disabled={confirmText !== "delete"}
+              onClick={() => {
+                onDelete(eventId);
+                setShowPopup(false);
+              }}
+            >
+              Delete
+            </Button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent, DeleteButton }

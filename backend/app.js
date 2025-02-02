@@ -20,6 +20,10 @@ app.use(json());
 app.use(urlencoded({ extended: true }));
 app.use(cookieParser());
 
+app.get("/",async (req,res)=>{
+    res.send("Hello world!")
+})
+
 app.get('/cron-job', (req, res) => {
     res.status(200).json({ message: 'Cron job endpoint hit successfully' });
 });

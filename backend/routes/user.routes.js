@@ -3,6 +3,7 @@ const { body } = require('express-validator');
 const router = express.Router();
 const userController = require('../controllers/user.controller');
 const authMiddleware = require('../middlewares/auth.middleware');
+const { getProfile, editProfile, deleteProfile } = require('../controllers/profile.controller');
 
 router.post('/signup', [
     body('name').trim().notEmpty().withMessage('Name is required'),
@@ -28,4 +29,15 @@ router.get('/checkLogin', authMiddleware.authUser, (req, res) => {
     res.status(200).json({ user: req.user });
 });
 
+router.get('/getprofile', authMiddleware.authUser, async (req,res) => {
+    getProfile(req,res)
+})
+
+router.post('/editprofile', authMiddleware.authUser, async (req,res) => {
+    editProfile(req,res)
+})
+
+router.delete('/deleteprofile', authMiddleware.authUser, async (req,res) => {
+    deleteProfile(req,res)
+})
 module.exports = router;

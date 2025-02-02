@@ -69,5 +69,5 @@ router.get('/:slug/registrations/count', (req, res) => {
 router.get('/:slug/registration-limit', (req, res) => {
     eventController.getRegistrationLimit(req, res);
 })
-
+router.delete("/:id", eventController.deleteEvent);
 module.exports = router;

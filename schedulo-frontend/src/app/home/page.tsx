@@ -8,7 +8,7 @@ import {
   CardTitle,
   CardContent,
   CardFooter,
-  DeleteButton
+  DeleteButton,
 } from "@/components/ui/card";
 import {
   Calendar,
@@ -214,84 +214,84 @@ export default function HomePage() {
                 </h1>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {currentEvents.map((event) => (
-                  <Card
-                    key={event._id}
-                    className="bg-white border border-gray-200 hover:border-indigo-200 hover:shadow-lg transition-all duration-300 cursor-pointer"
-                    onClick={() => handleEventClick(event._id)}
-                  >
-                    <CardHeader className="pb-3">
-                    <CardTitle className="flex items-center justify-between">
-                        <span className="text-lg font-semibold text-gray-900">
-                          {event.title}
-                        </span>
-                        <div className="flex items-center space-x-5">
-                          
+                {currentEvents
+                  .reverse() // Reverse the order to display the most recent event first
+                  .map((event) => (
+                    <Card
+                      key={event._id}
+                      className="bg-white border border-gray-200 hover:border-indigo-200 hover:shadow-lg transition-all duration-300 cursor-pointer"
+                      onClick={() => handleEventClick(event._id)}
+                    >
+                      <CardHeader className="pb-3">
+                        <CardTitle className="flex items-center justify-between">
+                          <span className="text-lg font-semibold text-gray-900">
+                            {event.title}
+                          </span>
+                          <div className="flex items-center space-x-5">
                             {/* Delete Button Component */}
                             <DeleteButton
                               eventId={event._id}
                               onDelete={handleDeleteEvent}
                             />
-                          
-                          <span className="text-sm px-3 py-1 bg-indigo-50 text-indigo-600 rounded-full font-medium">
-                            {event.mode}
-                          </span>
-                        </div>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="pb-4">
-                      <p className="text-gray-600 line-clamp-2 mb-4 text-sm">
-                        {event.description}
-                      </p>
+                            <span className="text-sm px-3 py-1 bg-indigo-50 text-indigo-600 rounded-full font-medium">
+                              {event.mode}
+                            </span>
+                          </div>
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="pb-4">
+                        <p className="text-gray-600 line-clamp-2 mb-4 text-sm">
+                          {event.description}
+                        </p>
 
-                      <div className="space-y-2">
-                        <div className="flex items-center text-sm text-gray-600 p-2 rounded bg-gray-50">
-                          <Calendar className="w-4 h-4 mr-2 text-indigo-500" />
-                          {new Date(event.eventDate).toLocaleDateString()}
+                        <div className="space-y-2">
+                          <div className="flex items-center text-sm text-gray-600 p-2 rounded bg-gray-50">
+                            <Calendar className="w-4 h-4 mr-2 text-indigo-500" />
+                            {new Date(event.eventDate).toLocaleDateString()}
+                          </div>
+                          <div className="flex items-center text-sm text-gray-600 p-2 rounded bg-gray-50">
+                            <Clock className="w-4 h-4 mr-2 text-indigo-500" />
+                            {event.timeSlots.length} time slot(s)
+                          </div>
                         </div>
-                        <div className="flex items-center text-sm text-gray-600 p-2 rounded bg-gray-50">
-                          <Clock className="w-4 h-4 mr-2 text-indigo-500" />
-                          {event.timeSlots.length} time slot(s)
+                      </CardContent>
+                      <CardFooter className="flex flex-col space-y-3 border-t bg-gray-50 py-3">
+                        <div className="flex items-center justify-between w-full p-2 bg-white rounded text-sm">
+                          <span className="text-gray-600 truncate mr-2">
+                            https://schedulo-eight.vercel.app/event/{event.slug}
+                          </span>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="p-2 h-8 hover:bg-gray-100"
+                            onClick={(e) =>
+                              handleCopyLink(e, event.slug, event._id)
+                            }
+                          >
+                            {copiedId === event._id ? (
+                              <CheckCheck className="w-4 h-4 text-green-500" />
+                            ) : (
+                              <Copy className="w-4 h-4 text-gray-500" />
+                            )}
+                          </Button>
                         </div>
-                      </div>
-                    </CardContent>
-                    <CardFooter className="flex flex-col space-y-3 border-t bg-gray-50 py-3">
-                      <div className="flex items-center justify-between w-full p-2 bg-white rounded text-sm">
-                        <span className="text-gray-600 truncate mr-2">
-                          https://schedulo-eight.vercel.app/event/{event.slug}
-                        </span>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="p-2 h-8 hover:bg-gray-100"
-                          onClick={(e) =>
-                            handleCopyLink(e, event.slug, event._id)
-                          }
-                        >
-                          {copiedId === event._id ? (
-                            <CheckCheck className="w-4 h-4 text-green-500" />
-                          ) : (
-                            <Copy className="w-4 h-4 text-gray-500" />
-                          )}
-                        </Button>
-                      </div>
-                      <div className="flex items-center justify-between w-full">
-                        <span className="text-sm font-medium text-gray-600">
-                          View Details
-                        </span>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="p-0 hover:bg-transparent hover:text-indigo-600"
-                        >
-                          →
-                        </Button>
-                      </div>
-                      {/* Delete Button with Event Handler */}
-                      <div className="w-full h-16 bg-white "></div>
-                    </CardFooter>
-                  </Card>
-                ))}
+                        <div className="flex items-center justify-between w-full">
+                          <span className="text-sm font-medium text-gray-600">
+                            View Details
+                          </span>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="p-0 hover:bg-transparent hover:text-indigo-600"
+                          >
+                            →
+                          </Button>
+                        </div>
+                        {/* Delete Button with Event Handler */}
+                        <div className="w-full h-16 bg-white "></div>
+                      </CardFooter>
+                    </Card>
+                  ))}
               </div>
 
               {/* Pagination Controls */}

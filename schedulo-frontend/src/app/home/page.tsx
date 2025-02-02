@@ -221,13 +221,22 @@ export default function HomePage() {
                     onClick={() => handleEventClick(event._id)}
                   >
                     <CardHeader className="pb-3">
-                      <CardTitle className="flex items-center justify-between">
+                    <CardTitle className="flex items-center justify-between">
                         <span className="text-lg font-semibold text-gray-900">
                           {event.title}
                         </span>
-                        <span className="text-sm px-3 py-1 bg-indigo-50 text-indigo-600 rounded-full font-medium">
-                          {event.mode}
-                        </span>
+                        <div className="flex items-center space-x-5">
+                          
+                            {/* Delete Button Component */}
+                            <DeleteButton
+                              eventId={event._id}
+                              onDelete={handleDeleteEvent}
+                            />
+                          
+                          <span className="text-sm px-3 py-1 bg-indigo-50 text-indigo-600 rounded-full font-medium">
+                            {event.mode}
+                          </span>
+                        </div>
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="pb-4">
@@ -279,12 +288,7 @@ export default function HomePage() {
                         </Button>
                       </div>
                       {/* Delete Button with Event Handler */}
-                      <div className="w-full h-16 bg-white ">
-                        <DeleteButton
-                          eventId={event._id}
-                          onDelete={handleDeleteEvent}
-                        />
-                      </div>
+                      <div className="w-full h-16 bg-white "></div>
                     </CardFooter>
                   </Card>
                 ))}

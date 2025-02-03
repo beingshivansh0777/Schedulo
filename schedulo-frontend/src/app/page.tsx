@@ -51,7 +51,14 @@ const HomePage = () => {
                 <h1 className="text-2xl font-bold text-gray-900">Schedulo </h1>
               </div>
               <div className="space-x-4">
-                <Button variant="ghost">About</Button>
+              <a
+                  href="/about"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Button variant="ghost">About</Button>
+                </a>
+                
 
                 <a
                   href="https://github.com/mukundsolanki/Schedulo"

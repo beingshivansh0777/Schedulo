@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -51,13 +52,13 @@ const HomePage = () => {
                 <h1 className="text-2xl font-bold text-gray-900">Schedulo </h1>
               </div>
               <div className="space-x-4">
-              <a
-                  href="/about"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Button variant="ghost">About</Button>
-                </a>
+              
+                <Link href="/about" passHref>
+                  <Button variant="ghost" asChild>
+                    <span>About</span>
+                  </Button>
+                </Link>
+
                 
 
                 <a

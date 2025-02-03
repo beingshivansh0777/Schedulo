@@ -17,7 +17,22 @@ const userSchema = new mongoose.Schema({
         required: true,
         select: false
     },
-});
+    createdEvents:[{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Event",
+        default:[]
+    }],
+    registeredEvents:[{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Event",
+        default:[]
+    }],
+    approvedEvents:[{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Event",
+        default:[]
+    }]
+},{timestamps:true});
 
 // Remove duplicate index declaration
 // userSchema.index({ email: 1 });

@@ -1,9 +1,8 @@
 "use client"
 import React from 'react'
 import Image from 'next/image';
-import { describe } from 'node:test';
-import { Description } from '@radix-ui/react-dialog';
-import { Radius } from 'lucide-react';
+import GitHubRepoStats from '@/components/ui/githubdata';
+
 
 const features = [
   {
@@ -44,23 +43,34 @@ const cardsData = [
   }
 ];
 
+ 
 function Page() {
   return (
     <>
+    {/* navbar section */}
       <div className='w-full'>
-        <div className='w-full flex items-center h-12 shadow-md'>
-          <div className='w-11/12 flex justify-center items-center flex-row'>
-          <div className='flex items-center justify-start'>
-            <div className='rounded-xl pt-2' style={{ position: "relative", width: "25px", height: "25px", }} >
-              <Image src="/favicon.ico"
-                alt='img'
-                fill
-                style={{ objectFit: "fill" }}
-              />
+        <div className='w-full flex items-center justify-center align-middle h-12 shadow-md'>
+          <div className='w-10/12 flex justify-between items-center flex-row'>
+            <div className='flex flex-row items-center'>
+              <div className='rounded-xl pt-2 mr-2' style={{ position: "relative", width: "25px", height: "25px", }} >
+                <Image src="/favicon.ico"
+                  alt='img'
+                  fill
+                  style={{ objectFit: "fill" }}
+                />
+              </div>
+              <div>
+                <h1 className='text-2xl font-extrabold'>Schedulo</h1>
+              </div>
             </div>
-            <div>
-              <h1 className='text-2xl font-extrabold'>Schedulo</h1>
-            </div>
+            <div className='rounded-3xl bg-slate-400 h-9 w-9 flex items-center justify-center'>
+              <div className='rounded-2xl h-5 w-5 pt-2' style={{ position: "relative", width: "30px", height: "30px", }} >
+                <Image src="/images/icon1.png"
+                  alt='img'
+                  fill
+                  style={{ objectFit: "fill" }}
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -106,7 +116,7 @@ function Page() {
         <h2 className='text-black font-extrabold ml-2 pl-9 text-5xl mb-1 '>📋 Why Choose Schedulo?</h2 >
         <div className='pl-9 ml-3 pt-2'>
           {features.map((f, index) => (
-            <div key={index} className=" flex justify-start shadow-sm m-2">
+            <div key={index} className=" flex justify-center shadow-sm m-2">
               <div className='flex items-start   w-full direction-normal p-1 m-1 max-md:flex-col'>
                   <h3 className="text-xl font-semibold  text-gray-800">{f.title}</h3>
                 <p className='w-1'></p> {/* Title */}
@@ -128,6 +138,10 @@ function Page() {
             ))}
           </div>
         </div>
+        <main className=" flex justify-center items-center flex-col p-6">
+            <h1 className="text-3xl font-bold mb-4">GitHub Repository Stats</h1>
+            <GitHubRepoStats />
+          </main>
 
         {/* footer */}
         <footer className="text-center text-base text-gray-600 py-4 flex-shrink-0">

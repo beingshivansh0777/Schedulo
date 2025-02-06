@@ -75,10 +75,10 @@ if (!process.env.CLOUD_NAME && !process.env.API_KEY && !process.env.API_SECRET) 
 
 // Cloudinary configuration
 cloudinary.config({
-  cloud_name: 'djfhwhtyy',
+  cloud_name: 'your_cloud_name',
 //   api_key: `${process.env.API_KEY}`,
-  api_key:'944476654513192',  
-  api_secret: 'AbbLeYlaOpNfB1lHWeJACHmJGlg',
+  api_key:'your_api_key',  
+  api_secret: 'your_api_secret',
   secure: true,
 });
 

@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -51,7 +52,14 @@ const HomePage = () => {
                 <h1 className="text-2xl font-bold text-gray-900">Schedulo </h1>
               </div>
               <div className="space-x-4">
-                <Button variant="ghost">About</Button>
+              
+                <Link href="/about" passHref>
+                  <Button variant="ghost" asChild>
+                    <span>About</span>
+                  </Button>
+                </Link>
+
+                
 
                 <a
                   href="https://github.com/mukundsolanki/Schedulo"

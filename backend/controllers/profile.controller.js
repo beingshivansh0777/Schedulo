@@ -1,5 +1,6 @@
 const userModel = require('../models/user.model');
 const redis = require('../db/redis');
+const { upload_on_cloudinary } = require('../utils/cloudinary.utils');
 
 module.exports.getProfile = async (req, res) => {
     try {
@@ -91,3 +92,33 @@ module.exports.deleteProfile = async (req, res) => {
         return res.status(500).json({ message: "Server error while deleting profile." });
     }
 };
+
+module.exports.addImage = async (req, res) => {
+    try {
+        const userId = req.user._id; // Get user ID from authentication middleware
+
+        // Check if user exists
+        const user = await userModel.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        const filebuffer = req.file ? req.file.buffer : null; // Assuming file is available in req.file.buffer
+
+        if (!filebuffer) {
+            return res.status(400).send({ error: "No file received" })
+        }
+
+        const uploaded_url = await upload_on_cloudinary(filebuffer)
+
+        user.image = uploaded_url
+
+        await user.save()
+
+        return res.status(200).send({ message: "Image updated succesfully", updaterUser: user })
+    } catch (error) {
+        console.error("Error during profile update:", error);
+        res.status(500).json({ error: "An error occurred while updating the profile." });
+
+    }
+}

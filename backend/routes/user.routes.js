@@ -3,7 +3,10 @@ const { body } = require('express-validator');
 const router = express.Router();
 const userController = require('../controllers/user.controller');
 const authMiddleware = require('../middlewares/auth.middleware');
-const { getProfile, editProfile, deleteProfile } = require('../controllers/profile.controller');
+const { getProfile, editProfile, deleteProfile, addImage } = require('../controllers/profile.controller');
+const multer = require('multer')
+const upload = multer({storage:multer.memoryStorage()})
+
 
 router.post('/signup', [
     body('name').trim().notEmpty().withMessage('Name is required'),
@@ -39,5 +42,9 @@ router.post('/editprofile', authMiddleware.authUser, async (req,res) => {
 
 router.delete('/deleteprofile', authMiddleware.authUser, async (req,res) => {
     deleteProfile(req,res)
+})
+
+router.post('/editImage',  authMiddleware.authUser, upload.single('image'), async (req,res) => {
+    addImage(req,res)    
 })
 module.exports = router;

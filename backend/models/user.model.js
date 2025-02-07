@@ -17,6 +17,10 @@ const userSchema = new mongoose.Schema({
         required: true,
         select: false
     },
+    image:{
+        type:String,
+        default:true
+    },
     createdEvents:[{
         type:mongoose.Schema.Types.ObjectId,
         ref:"Event",

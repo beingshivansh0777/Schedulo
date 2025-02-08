@@ -35,7 +35,10 @@ const userSchema = new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref:"Event",
         default:[]
-    }]
+    }],
+    location:{
+        type:String
+    }
 },{timestamps:true});
 
 // Remove duplicate index declaration

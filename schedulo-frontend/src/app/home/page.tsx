@@ -18,6 +18,7 @@ import {
   LogOut,
   Copy,
   CheckCheck,
+  User
 } from "lucide-react";
 import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
 
@@ -172,6 +173,12 @@ export default function HomePage() {
                 Create Event
               </Button>
             )}
+            <Button
+              onClick={()=>{window.location.href="/profile"}}
+            >
+              <User/> Profile
+            </Button>
+
             <Button
               variant="ghost"
               onClick={handleLogout}

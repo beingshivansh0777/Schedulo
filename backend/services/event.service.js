@@ -3,11 +3,12 @@ const shortid = require('shortid');
 const RegistrationModel = require('../models/registration.model');
 const redis = require('../db/redis');
 
-module.exports.createEvent = async ({ title, description, mode, link = '', eventDate, registrationLimit, timeSlots, createdBy, backgroundImage }) => {
-    if (!title || !description || !mode || !eventDate || !registrationLimit || !timeSlots || !createdBy || !backgroundImage) {
+module.exports.createEvent = async ({ title, description, mode, link = '', eventDate, registrationLimit, timeSlots, createdBy, backgroundImage, userDetails }) => {
+    if (!title || !description || !mode || !eventDate || !registrationLimit || !timeSlots || !createdBy || !backgroundImage || !userDetails) {
         throw new Error('All fields are required');
     }
     try {
+        // console.log(userDetails)
         const slug = shortid.generate();
 
         const newEvent = new EventModel({
@@ -20,11 +21,13 @@ module.exports.createEvent = async ({ title, description, mode, link = '', event
             timeSlots,
             slug: slug,
             createdBy,
-            backgroundImage
+            backgroundImage,
+            createdBy:userDetails._id
         });
 
         await newEvent.save();
-
+        userDetails.createdEvents.push(newEvent._id);
+        await userDetails.save();
         // Update Redis cache
         const redisKey = `events:${createdBy}`;
         const cachedEvents = await redis.get(redisKey);

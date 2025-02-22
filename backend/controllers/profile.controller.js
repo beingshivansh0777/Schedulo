@@ -16,7 +16,7 @@ module.exports.getProfile = async (req, res) => {
         }
 
         // Fetch user from database if not cached
-        const user = await userModel.findById(userId).select('-password');
+        const user = await userModel.findById(userId).select('-password').populate('createdEvents');
 
         if (!user) {
             return res.status(404).json({ message: "User not found" });

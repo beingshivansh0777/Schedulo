@@ -5,14 +5,21 @@ import axios from "axios";
 import { motion } from "framer-motion";
 import { Pencil } from "lucide-react";
 
+interface Event {
+  _id: string;
+  title: string;
+  description?: string;
+  eventDate?: string;
+}
+
 interface Profile {
   name: string;
   email: string;
   image: string;
   location: string;
-  createdEvents: string[];
-  registeredEvents: string[];
-  approvedEvents: string[];
+  createdEvents: Event[];
+  registeredEvents: Event[];
+  approvedEvents: Event[];
 }
 
 export default function ProfilePage() {
@@ -61,7 +68,7 @@ export default function ProfilePage() {
     );
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-white p-6">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-purple-100 to-blue-50 p-6">
       <motion.div
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -70,7 +77,7 @@ export default function ProfilePage() {
       >
         <button
           className="absolute top-4 right-4 p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition"
-          onClick={() => window.location.href="/editprofile"}
+          onClick={() => (window.location.href = "/editprofile")}
         >
           <Pencil size={20} className="text-gray-700" />
         </button>
@@ -97,7 +104,7 @@ export default function ProfilePage() {
   );
 }
 
-function EventSection({ title, events, color }: { title: string; events?: string[]; color: string }) {
+function EventSection({ title, events, color }: { title: string; events?: Event[]; color: string }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -105,16 +112,42 @@ function EventSection({ title, events, color }: { title: string; events?: string
       transition={{ duration: 0.4, delay: 0.2 }}
       className="text-left"
     >
-      <p className="font-semibold text-gray-900">{title}:</p>
-      <div className="flex flex-wrap gap-2 mt-2">
+      <p className="font-bold text-gray-800 text-xl mb-4 tracking-wide">{title}:</p>
+      <div className="flex flex-col gap-6 mt-2">
         {events?.length ? (
           events.map((event, index) => (
-            <span key={index} className={`text-white text-xs px-3 py-1 rounded-full ${color} shadow-sm`}>
-              {event}
-            </span>
+            <motion.div
+              key={event._id}
+              whileHover={{
+                scale: 1.05,
+                boxShadow: "0px 12px 30px rgba(0, 0, 0, 0.3)",
+                borderColor: "#fff",
+              }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              className={`p-5 rounded-3xl bg-gradient-to-br from-purple-400 to-blue-400 text-white shadow-xl hover:shadow-2xl border border-transparent hover:border-white transition-all duration-300`}
+            >
+              <h3 className="text-2xl font-black mb-2 tracking-tight drop-shadow-lg">
+                {event.title}
+              </h3>
+              {event.description && (
+                <p className="text-sm opacity-95 mb-2 leading-relaxed drop-shadow-md">
+                  {event.description}
+                </p>
+              )}
+              {event.eventDate && (
+                <p className="text-xs italic mt-2 opacity-80 flex items-center gap-1 drop-shadow-sm">
+                  📅{" "}
+                  <span className="underline decoration-dotted">
+                    {new Date(event.eventDate).toLocaleDateString()}
+                  </span>
+                </p>
+              )}
+            </motion.div>
           ))
         ) : (
-          <span className="text-gray-500 italic">Not available</span>
+          <span className="text-gray-500 italic">No events available</span>
         )}
       </div>
     </motion.div>

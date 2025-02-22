@@ -12,6 +12,7 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 module.exports.createEvent = async (req, res, next) => {
     const error = validationResult(req);
+    // console.log(req.user)
     if (!error.isEmpty()) {
         // console.log({ error: error.array() })
         return res.status(400).json({ error: error.array() });
@@ -20,7 +21,7 @@ module.exports.createEvent = async (req, res, next) => {
 
     const createdBy = req.user.id;
 
-    const eventDetails = { title, description, mode, link, eventDate, registrationLimit, timeSlots, createdBy, backgroundImage }
+    const eventDetails = { title, description, mode, link, eventDate, registrationLimit, timeSlots, createdBy, backgroundImage,userDetails:req.user };
 
     try {
         const newEvent = await eventService.createEvent(eventDetails);

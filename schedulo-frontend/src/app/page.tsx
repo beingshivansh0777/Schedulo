@@ -20,6 +20,8 @@ import { Github } from "lucide-react";
 import Image from "next/image";
 import { LineShadowText } from "@/components/ui/line-shadow-text";
 import { useTheme } from "next-themes";
+import Footer from "@/components/ui/Footer";
+ 
 
 const HomePage = () => {
   const words = ["events", "interviews", "meetings"];
@@ -30,7 +32,7 @@ const HomePage = () => {
     <div>
       <ToastContainer />
       <div className="h-screen w-full relative overflow-hidden flex flex-col">
-        {/* Background with grid pattern and gradient */}
+        
         <div
           className="absolute inset-0 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50"
           style={{
@@ -48,8 +50,8 @@ const HomePage = () => {
           {/* Navigation */}
           <nav className="py-6 px-8 flex-shrink-0">
             <div className="max-w-7xl mx-auto flex justify-between items-center">
-              <div className="flex  items-center space-x-4">
-                <h1 className="text-2xl font-bold text-gray-900">Schedulo </h1>
+              <div className="flex items-center space-x-4">
+                <h1 className="text-2xl font-bold text-gray-900">Schedulo</h1>
               </div>
               <div className="space-x-4">
                 <Link href="/about" passHref>
@@ -130,32 +132,11 @@ const HomePage = () => {
             </div>
           </section>
 
-          {/* Footer */}
-          <footer className="text-center text-base text-gray-600 py-4 flex-shrink-0">
-            <p>
-              © 2025 Schedulo.{" "}
-              <a
-                href="https://github.com/mukundsolanki/Schedulo/blob/main/LICENSE"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 hover:underline"
-              >
-                MIT Licensed
-              </a>
-              . Contribute on{" "}
-              <a
-                href="https://github.com/mukundsolanki/Schedulo"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 hover:underline"
-              >
-                Github
-              </a>
-              .
-            </p>
-          </footer>
+  
         </div>
       </div>
+      {/* Footer Section */}
+       <Footer/>
     </div>
   );
 };
